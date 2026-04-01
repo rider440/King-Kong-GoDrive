@@ -94,8 +94,8 @@ export const NavigationDrawer = () => {
     <aside className="hidden md:flex flex-col fixed top-0 left-0 h-screen w-64 bg-surface-container-low border-r border-outline/10 z-50">
       <div className="px-6 py-8">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
-            <Truck size={24} fill="currentColor" />
+          <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
+            <img src="/logo.png" alt="Fleet Ops Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="text-lg font-black text-primary tracking-tight leading-none uppercase">Fleet Ops</h1>
@@ -121,7 +121,7 @@ export const TopAppBar = ({ title, theme, onThemeToggle, onMenuClick }: { title:
         >
           <Menu size={24} />
         </button>
-        <h2 className="text-xl font-bold text-primary tracking-tight uppercase hidden sm:block">Ankur Transport</h2>
+        <h2 className="text-xl font-bold text-primary tracking-tight uppercase hidden sm:block">King Kong GoDrive </h2>
         <h2 className="text-lg font-bold text-on-surface sm:hidden">{title}</h2>
       </div>
 
@@ -344,8 +344,8 @@ export const Layout = ({ children, title }: { children: React.ReactNode; title: 
               <div className="h-full flex flex-col">
                 <div className="p-6 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
-                      <Truck size={20} fill="currentColor" />
+                    <div className="w-8 h-8 flex items-center justify-center overflow-hidden">
+                      <img src="/logo.png" alt="Fleet Ops Logo" className="w-full h-full object-contain" />
                     </div>
                     <h1 className="text-base font-black text-primary tracking-tight uppercase">Fleet Ops</h1>
                   </div>

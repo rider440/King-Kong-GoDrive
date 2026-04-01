@@ -1,12 +1,15 @@
 {
-  "name": "react-example",
+  "name": "king-kong-godrive",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "homepage": "https://rider440.github.io/King-Kong-GoDrive",
   "scripts": {
-    "dev": "tsx server.ts",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
   },
@@ -34,14 +37,6 @@
     "gh-pages": "^6.3.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  },
-  "homepage": "https://github.com/rider440/King-Kong-GoDrive.git",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "typescript": "~5.8.2"
   }
 }

@@ -1,12 +1,12 @@
 import React from 'react';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  TrendingDown, 
-  Calendar, 
-  Download, 
-  FileText, 
-  PieChart, 
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+  Download,
+  FileText,
+  PieChart,
   Activity,
   ChevronRight
 } from 'lucide-react';
@@ -51,17 +51,17 @@ export default function Reports() {
               </div>
             </div>
           </div>
-          
+
           <div className="h-64 flex items-end gap-2">
             {[65, 80, 45, 90, 70, 85, 95, 60, 75, 80, 90, 85].map((val, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
                 <div className="w-full bg-surface-container-high rounded-t-lg relative overflow-hidden h-full">
-                  <div 
-                    className="absolute bottom-0 left-0 right-0 bg-primary group-hover:bg-primary-container transition-all duration-500 rounded-t-lg" 
-                    style={{ height: `${val}%` }} 
+                  <div
+                    className="absolute bottom-0 left-0 right-0 bg-primary group-hover:bg-primary-container transition-all duration-500 rounded-t-lg"
+                    style={{ height: `${val}%` }}
                   />
                 </div>
-                <span className="text-[8px] font-bold text-on-surface-variant uppercase">M{i+1}</span>
+                <span className="text-[8px] font-bold text-on-surface-variant uppercase">M{i + 1}</span>
               </div>
             ))}
           </div>
