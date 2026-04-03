@@ -45,8 +45,7 @@ export default function AddDriver() {
     PaymentType: PaymentType.Monthly,
     AadhaarNo: '',
     PANNo: '',
-    IsActive: true,
-    IsAvailable: true,
+    IsAvailable: true
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -92,7 +91,6 @@ export default function AddDriver() {
                     value={formData.FirstName}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="e.g. Robert"
                     type="text"
                     required
                   />
@@ -104,7 +102,6 @@ export default function AddDriver() {
                     value={formData.LastName}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="e.g. Wilson"
                     type="text"
                   />
                 </div>
@@ -130,7 +127,6 @@ export default function AddDriver() {
                     value={formData.DateOfBirth}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="YYYY-MM-DD"
                     type="date"
                     required
                   />
@@ -154,7 +150,6 @@ export default function AddDriver() {
                     value={formData.PhoneNo}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="+91 9876543210"
                     type="tel"
                     required
                   />
@@ -166,7 +161,6 @@ export default function AddDriver() {
                     value={formData.AlternatePhoneNo}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="+91 9876543211"
                     type="tel"
                   />
                 </div>
@@ -178,7 +172,6 @@ export default function AddDriver() {
                   value={formData.Email}
                   onChange={handleChange}
                   className="input-field"
-                  placeholder="robert.wilson@kingkong.com"
                   type="email"
                 />
               </div>
@@ -200,7 +193,6 @@ export default function AddDriver() {
                     value={formData.AddressLine1}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="House No, Street"
                     type="text"
                   />
                 </div>
@@ -211,7 +203,6 @@ export default function AddDriver() {
                     value={formData.AddressLine2}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="Locality, Landmark"
                     type="text"
                   />
                 </div>
@@ -224,7 +215,6 @@ export default function AddDriver() {
                     value={formData.City}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="City"
                     type="text"
                   />
                 </div>
@@ -235,7 +225,6 @@ export default function AddDriver() {
                     value={formData.State}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="State"
                     type="text"
                   />
                 </div>
@@ -246,7 +235,6 @@ export default function AddDriver() {
                     value={formData.Pincode}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="123456"
                     type="text"
                   />
                 </div>
@@ -258,7 +246,6 @@ export default function AddDriver() {
                   value={formData.Country}
                   onChange={handleChange}
                   className="input-field"
-                  placeholder="India"
                   type="text"
                 />
               </div>
@@ -280,7 +267,6 @@ export default function AddDriver() {
                     value={formData.LicenseNumber}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="DL-XXXXXXXXXXXX"
                     type="text"
                     required
                   />
@@ -292,7 +278,6 @@ export default function AddDriver() {
                     value={formData.LicenseType}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="e.g. HMV, LMV"
                     type="text"
                   />
                 </div>
@@ -305,7 +290,6 @@ export default function AddDriver() {
                     value={formData.LicenseIssueDate}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>
@@ -316,7 +300,6 @@ export default function AddDriver() {
                     value={formData.LicenseExpiryDate}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="YYYY-MM-DD"
                     type="date"
                     required
                   />
@@ -328,7 +311,6 @@ export default function AddDriver() {
                     value={formData.LicenseIssuedBy}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="RTO Name"
                     type="text"
                   />
                 </div>
@@ -341,7 +323,6 @@ export default function AddDriver() {
                     value={formData.ExperienceYears}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="0"
                     type="number"
                     min="0"
                   />
@@ -353,7 +334,6 @@ export default function AddDriver() {
                     value={formData.VehicleTypeAllowed}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="e.g. Car, Truck, Bus"
                     type="text"
                   />
                 </div>
@@ -376,7 +356,6 @@ export default function AddDriver() {
                     value={formData.JoinDate}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>
@@ -388,7 +367,6 @@ export default function AddDriver() {
                     onChange={handleChange}
                     className="input-field"
                     type="number"
-                    placeholder="0.00"
                   />
                 </div>
                 <div className="space-y-2">
@@ -413,7 +391,6 @@ export default function AddDriver() {
                     value={formData.AadhaarNo}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="XXXX-XXXX-XXXX"
                     type="text"
                   />
                 </div>
@@ -424,7 +401,6 @@ export default function AddDriver() {
                     value={formData.PANNo}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="ABCDE1234F"
                     type="text"
                   />
                 </div>
@@ -449,17 +425,6 @@ export default function AddDriver() {
                   className="w-5 h-5 rounded border-outline text-primary focus:ring-primary"
                 />
                 <label htmlFor="IsVerified" className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Verified</label>
-              </div>
-              <div className="flex items-center gap-3">
-                <input
-                  id="IsActive"
-                  name="IsActive"
-                  type="checkbox"
-                  checked={formData.IsActive}
-                  onChange={handleChange}
-                  className="w-5 h-5 rounded border-outline text-primary focus:ring-primary"
-                />
-                <label htmlFor="IsActive" className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Active</label>
               </div>
               <div className="flex items-center gap-3">
                 <input

@@ -74,7 +74,6 @@ export interface Driver {
   PaymentType: PaymentType;
   AadhaarNo?: string;
   PANNo?: string;
-  IsActive: boolean;
   IsAvailable: boolean;
   LastActiveTime?: string;
   CreatedAt?: string;
@@ -108,7 +107,6 @@ export interface Vehicle {
   PollutionExpiryDate?: string;
   CurrentLocation?: string;
   TotalDistanceTravelled: number;
-  IsActive: boolean;
   IsAvailable: boolean;
   CreatedAt?: string;
 }

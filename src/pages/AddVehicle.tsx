@@ -42,7 +42,6 @@ export default function AddVehicle() {
     PollutionExpiryDate: '',
     CurrentLocation: '',
     TotalDistanceTravelled: 0,
-    IsActive: true,
     IsAvailable: true,
   });
 
@@ -90,7 +89,6 @@ export default function AddVehicle() {
                     value={formData.VehicleNumber}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="e.g. MH31AB1234"
                     type="text"
                     required
                   />
@@ -102,7 +100,6 @@ export default function AddVehicle() {
                     value={formData.VehicleType}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="e.g. Truck, Bus, Car"
                     type="text"
                     required
                   />
@@ -116,7 +113,6 @@ export default function AddVehicle() {
                     value={formData.Brand}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="e.g. Tata, Mahindra"
                     type="text"
                     required
                   />
@@ -128,7 +124,6 @@ export default function AddVehicle() {
                     value={formData.Model}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="e.g. Prima, Scorpio"
                     type="text"
                     required
                   />
@@ -140,7 +135,6 @@ export default function AddVehicle() {
                     value={formData.Color}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="e.g. White, Blue"
                     type="text"
                   />
                 </div>
@@ -163,7 +157,6 @@ export default function AddVehicle() {
                     value={formData.ManufacturingYear}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="YYYY"
                     type="number"
                     min="1900"
                     max={new Date().getFullYear()}
@@ -176,7 +169,6 @@ export default function AddVehicle() {
                     value={formData.ChassisNumber}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="Unique Chassis No"
                     type="text"
                   />
                 </div>
@@ -187,7 +179,6 @@ export default function AddVehicle() {
                     value={formData.EngineNumber}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="Unique Engine No"
                     type="text"
                   />
                 </div>
@@ -200,7 +191,6 @@ export default function AddVehicle() {
                     value={formData.OwnerName}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="Owner Full Name"
                     type="text"
                   />
                 </div>
@@ -253,7 +243,6 @@ export default function AddVehicle() {
                     className="input-field"
                     type="number"
                     step="0.1"
-                    placeholder="0.0"
                   />
                 </div>
               </div>
@@ -267,7 +256,6 @@ export default function AddVehicle() {
                     className="input-field"
                     type="number"
                     step="0.1"
-                    placeholder="0.0"
                   />
                 </div>
                 <div className="space-y-2">
@@ -278,7 +266,6 @@ export default function AddVehicle() {
                     onChange={handleChange}
                     className="input-field"
                     type="number"
-                    placeholder="0"
                   />
                 </div>
               </div>
@@ -300,7 +287,6 @@ export default function AddVehicle() {
                     value={formData.InsuranceProvider}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="Company Name"
                     type="text"
                   />
                 </div>
@@ -311,7 +297,6 @@ export default function AddVehicle() {
                     value={formData.InsurancePolicyNumber}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="Policy No"
                     type="text"
                   />
                 </div>
@@ -324,7 +309,6 @@ export default function AddVehicle() {
                     value={formData.InsuranceExpiryDate}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>
@@ -335,7 +319,6 @@ export default function AddVehicle() {
                     value={formData.FitnessExpiryDate}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>
@@ -348,7 +331,6 @@ export default function AddVehicle() {
                     value={formData.PermitNumber}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="Permit No"
                     type="text"
                   />
                 </div>
@@ -359,7 +341,6 @@ export default function AddVehicle() {
                     value={formData.PermitExpiryDate}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>
@@ -371,7 +352,6 @@ export default function AddVehicle() {
                   value={formData.PollutionExpiryDate}
                   onChange={handleChange}
                   className="input-field"
-                  placeholder="YYYY-MM-DD"
                   type="date"
                 />
               </div>
@@ -393,7 +373,6 @@ export default function AddVehicle() {
                     value={formData.CurrentLocation}
                     onChange={handleChange}
                     className="input-field"
-                    placeholder="Current City/Area"
                     type="text"
                   />
                 </div>
@@ -406,22 +385,10 @@ export default function AddVehicle() {
                     className="input-field"
                     type="number"
                     step="0.01"
-                    placeholder="0.00"
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                <div className="flex items-center gap-3">
-                  <input
-                    id="IsActive"
-                    name="IsActive"
-                    type="checkbox"
-                    checked={formData.IsActive}
-                    onChange={handleChange}
-                    className="w-5 h-5 rounded border-outline text-primary focus:ring-primary"
-                  />
-                  <label htmlFor="IsActive" className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Active Asset</label>
-                </div>
+              <div className="pt-4">
                 <div className="flex items-center gap-3">
                   <input
                     id="IsAvailable"
