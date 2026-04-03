@@ -12,7 +12,8 @@ import {
   MapPin,
   Briefcase,
   FileText,
-  Activity
+  Activity,
+  Upload
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Gender, PaymentType, Driver } from '../types';
@@ -45,13 +46,25 @@ export default function AddDriver() {
     PaymentType: PaymentType.Monthly,
     AadhaarNo: '',
     PANNo: '',
-    IsAvailable: true
+    IsAvailable: true,
+    image: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
     setFormData(prev => ({ ...prev, [name]: val }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, image: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const calculateProgress = () => {
@@ -76,6 +89,50 @@ export default function AddDriver() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8 space-y-8">
+          {/* Section: Profile Image */}
+          <section className="space-y-4">
+            <div className="flex items-center gap-2 px-2">
+              <User size={16} className="text-primary" />
+              <span className="text-[0.75rem] font-bold uppercase tracking-widest text-slate-500">Profile Image</span>
+            </div>
+            <div className="bg-surface-container-lowest rounded-2xl p-8 space-y-6 shadow-ambient border border-outline/5">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 bg-surface-container border-2 border-outline/10 flex items-center justify-center">
+                  {formData.image ? (
+                    <img src={formData.image} alt="Profile Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <User size={32} className="text-outline" />
+                  )}
+                </div>
+                <div className="flex-1 w-full space-y-2">
+                  <label className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant block">Profile Picture</label>
+                  <div className="flex items-center gap-4">
+                    <label className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg cursor-pointer transition-colors text-sm font-semibold inline-flex items-center gap-2">
+                      <Upload size={16} />
+                      Upload Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                      />
+                    </label>
+                    {formData.image && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
+                        className="text-error hover:bg-error/10 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-on-surface-variant">Upload a clear photo for the driver's profile (Max 2MB).</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Section: Personal Information */}
           <section className="space-y-4">
             <div className="flex items-center gap-2 px-2">

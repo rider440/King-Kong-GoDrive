@@ -80,6 +80,7 @@ export interface Driver {
   CreatedBy?: string;
   UpdatedAt?: string;
   UpdatedBy?: string;
+  image?: string;
 }
 
 export interface Vehicle {

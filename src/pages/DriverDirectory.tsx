@@ -18,7 +18,8 @@ import {
   Mail,
   CreditCard,
   Briefcase,
-  User
+  User,
+  Upload
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/src/lib/utils';
@@ -284,7 +285,7 @@ export default function DriverDirectory() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleAction(driver, 'view')}
                         title="View Profile"
@@ -368,6 +369,58 @@ export default function DriverDirectory() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-8 space-y-10">
+                {/* Profile Image */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-2 border-b border-outline/5 pb-2">
+                    <User size={16} className="text-primary" />
+                    <h3 className="text-xs font-black uppercase tracking-widest text-on-surface">Profile Image</h3>
+                  </div>
+                  <div className="flex flex-col md:flex-row items-center gap-6">
+                    <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 bg-surface-container border-2 border-outline/10 flex items-center justify-center">
+                      {selectedDriver.image ? (
+                        <img src={selectedDriver.image} alt="Profile Preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <User size={32} className="text-outline" />
+                      )}
+                    </div>
+                    {modalMode !== 'view' && (
+                      <div className="flex-1 w-full space-y-2">
+                        <div className="flex items-center gap-4">
+                          <label className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg cursor-pointer transition-colors text-sm font-semibold inline-flex items-center gap-2">
+                            <Upload size={16} />
+                            Upload Image
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onloadend = () => {
+                                    setSelectedDriver((prev: any) => ({ ...prev, image: reader.result as string }));
+                                  };
+                                  reader.readAsDataURL(file);
+                                }
+                              }}
+                            />
+                          </label>
+                          {selectedDriver.image && (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedDriver((prev: any) => ({ ...prev, image: '' }))}
+                              className="text-error hover:bg-error/10 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-xs text-on-surface-variant">Upload a clear photo for the driver's profile.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Personal Info */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-2 border-b border-outline/5 pb-2">
