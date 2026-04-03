@@ -162,6 +162,7 @@ export default function TripDispatch() {
                         value={formData.DepartureDate}
                         onChange={handleChange}
                         className="input-field pl-12"
+                        placeholder="YYYY-MM-DD"
                         type="date"
                       />
                     </div>
@@ -175,6 +176,7 @@ export default function TripDispatch() {
                         value={formData.DepartureTime}
                         onChange={handleChange}
                         className="input-field pl-12"
+                        placeholder="HH:MM"
                         type="time"
                       />
                     </div>
@@ -188,6 +190,7 @@ export default function TripDispatch() {
                         value={formData.ExpectedArrivalDate}
                         onChange={handleChange}
                         className="input-field pl-12"
+                        placeholder="YYYY-MM-DD"
                         type="date"
                       />
                     </div>
@@ -201,6 +204,7 @@ export default function TripDispatch() {
                         value={formData.ExpectedArrivalTime}
                         onChange={handleChange}
                         className="input-field pl-12"
+                        placeholder="HH:MM"
                         type="time"
                       />
                     </div>

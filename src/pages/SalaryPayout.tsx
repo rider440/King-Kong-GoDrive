@@ -178,6 +178,7 @@ export default function SalaryPayout() {
                         type="number"
                         value={formData.SalaryYear}
                         onChange={handleChange}
+                        placeholder="YYYY"
                         className="w-full bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3.5 text-sm font-bold"
                       />
                     </div>
@@ -214,6 +215,7 @@ export default function SalaryPayout() {
                               field.color === 'amber' ? "text-amber-500 focus:border-amber-500" :
                                 "text-primary focus:border-primary"
                         )}
+                        placeholder="0"
                       />
                     </div>
                   ))}
@@ -239,6 +241,7 @@ export default function SalaryPayout() {
                         value={formData.BasicSalary}
                         onChange={handleChange}
                         className="w-full bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg pl-10 pr-4 py-3.5 text-sm font-black italic text-primary"
+                        placeholder="0.00"
                       />
                     </div>
                   </div>
@@ -252,6 +255,7 @@ export default function SalaryPayout() {
                         value={formData.PerDaySalary}
                         onChange={handleChange}
                         className="w-full bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg pl-10 pr-4 py-3.5 text-sm font-bold"
+                        placeholder="0.00"
                       />
                     </div>
                   </div>
@@ -273,6 +277,7 @@ export default function SalaryPayout() {
                           value={formData[field.name as keyof DriverPayroll] as number}
                           onChange={handleChange}
                           className="w-full bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg pl-8 pr-3 py-2.5 text-xs font-bold"
+                          placeholder="0.00"
                         />
                       </div>
                     </div>
@@ -299,6 +304,7 @@ export default function SalaryPayout() {
                         value={formData.Penalty}
                         onChange={handleChange}
                         className="w-full bg-surface-container-low border-0 border-b-2 border-transparent focus:border-error focus:ring-0 rounded-t-lg pl-10 pr-4 py-3.5 text-sm font-black italic text-error"
+                        placeholder="0.00"
                       />
                     </div>
                   </div>
@@ -312,6 +318,7 @@ export default function SalaryPayout() {
                         value={formData.AdvanceDeduction}
                         onChange={handleChange}
                         className="w-full bg-surface-container-low border-0 border-b-2 border-transparent focus:border-error focus:ring-0 rounded-t-lg pl-10 pr-4 py-3.5 text-sm font-black italic text-error"
+                        placeholder="0.00"
                       />
                     </div>
                   </div>
@@ -371,6 +378,7 @@ export default function SalaryPayout() {
                     value={formData.PaymentDate}
                     onChange={handleChange}
                     className="w-full bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3.5 text-sm font-bold"
+                    placeholder="YYYY-MM-DD"
                   />
                 </div>
                 <div className="space-y-2">

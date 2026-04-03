@@ -101,7 +101,7 @@ export default function AttendanceLog() {
               <Filter size={16} className="mr-2" />
               Filter
             </button>
-            <input className="px-4 py-2.5 bg-surface-container-high text-on-surface-variant rounded-lg text-sm font-semibold border-none focus:ring-0" type="date" defaultValue={new Date().toISOString().split('T')[0]} />
+            <input className="px-4 py-2.5 bg-surface-container-high text-on-surface-variant rounded-lg text-sm font-semibold border-none focus:ring-0" type="date" placeholder="YYYY-MM-DD" defaultValue={new Date().toISOString().split('T')[0]} />
           </div>
         </div>
 

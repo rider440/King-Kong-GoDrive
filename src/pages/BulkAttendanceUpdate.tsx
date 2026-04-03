@@ -89,6 +89,7 @@ export default function BulkAttendanceUpdate() {
                 value={formData.AttendanceDate}
                 onChange={handleChange}
                 className="w-full bg-surface-container-low border-0 border-b-2 border-transparent py-3.5 px-4 rounded-t-lg text-on-surface focus:border-primary focus:ring-0 font-bold text-sm"
+                placeholder="YYYY-MM-DD"
                 type="date"
               />
             </div>
@@ -133,6 +134,7 @@ export default function BulkAttendanceUpdate() {
                   value={formData.CheckInTime}
                   onChange={handleChange}
                   className="w-full bg-surface-container-low border-0 border-b-2 border-transparent py-3.5 px-4 rounded-t-lg text-on-surface focus:border-primary focus:ring-0 font-bold text-sm"
+                  placeholder="HH:MM"
                   type="time"
                 />
               </div>
@@ -146,6 +148,7 @@ export default function BulkAttendanceUpdate() {
                   value={formData.CheckOutTime}
                   onChange={handleChange}
                   className="w-full bg-surface-container-low border-0 border-b-2 border-transparent py-3.5 px-4 rounded-t-lg text-on-surface focus:border-primary focus:ring-0 font-bold text-sm"
+                  placeholder="HH:MM"
                   type="time"
                 />
               </div>

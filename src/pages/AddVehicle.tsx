@@ -163,6 +163,7 @@ export default function AddVehicle() {
                     value={formData.ManufacturingYear}
                     onChange={handleChange}
                     className="input-field"
+                    placeholder="YYYY"
                     type="number"
                     min="1900"
                     max={new Date().getFullYear()}
@@ -323,6 +324,7 @@ export default function AddVehicle() {
                     value={formData.InsuranceExpiryDate}
                     onChange={handleChange}
                     className="input-field"
+                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>
@@ -333,6 +335,7 @@ export default function AddVehicle() {
                     value={formData.FitnessExpiryDate}
                     onChange={handleChange}
                     className="input-field"
+                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>
@@ -356,6 +359,7 @@ export default function AddVehicle() {
                     value={formData.PermitExpiryDate}
                     onChange={handleChange}
                     className="input-field"
+                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>
@@ -367,6 +371,7 @@ export default function AddVehicle() {
                   value={formData.PollutionExpiryDate}
                   onChange={handleChange}
                   className="input-field"
+                  placeholder="YYYY-MM-DD"
                   type="date"
                 />
               </div>

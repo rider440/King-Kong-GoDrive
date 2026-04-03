@@ -384,6 +384,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.FirstName}
+                        placeholder="e.g. Julian"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -392,6 +393,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.LastName}
+                        placeholder="e.g. Rossi"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -413,6 +415,7 @@ export default function DriverDirectory() {
                         readOnly={modalMode === 'view'}
                         type="date"
                         defaultValue={selectedDriver.DateOfBirth}
+                        placeholder="YYYY-MM-DD"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -431,6 +434,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.PhoneNo}
+                        placeholder="+1 (555) 012-3456"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -439,6 +443,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.AlternatePhoneNo}
+                        placeholder="+1 (555) 999-8888"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -447,6 +452,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.Email}
+                        placeholder="jrossi@kinetic.com"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -465,6 +471,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.AddressLine1}
+                        placeholder="House No, Street"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -473,6 +480,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.AddressLine2}
+                        placeholder="Locality, Landmark"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -483,6 +491,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.City}
+                        placeholder="City"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -491,6 +500,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.State}
+                        placeholder="State"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -499,6 +509,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.Pincode}
+                        placeholder="Pincode"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -508,6 +519,7 @@ export default function DriverDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedDriver.Country}
+                      placeholder="Country"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -525,6 +537,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.LicenseNumber}
+                        placeholder="NY-8829-XJ"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -533,6 +546,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.LicenseType}
+                        placeholder="e.g. Class A • Commercial"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -544,6 +558,7 @@ export default function DriverDirectory() {
                         readOnly={modalMode === 'view'}
                         type="date"
                         defaultValue={selectedDriver.LicenseIssueDate}
+                        placeholder="YYYY-MM-DD"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -553,6 +568,7 @@ export default function DriverDirectory() {
                         readOnly={modalMode === 'view'}
                         type="date"
                         defaultValue={selectedDriver.LicenseExpiryDate}
+                        placeholder="YYYY-MM-DD"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -561,6 +577,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.LicenseIssuedBy}
+                        placeholder="NY DMV"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -572,6 +589,7 @@ export default function DriverDirectory() {
                         readOnly={modalMode === 'view'}
                         type="number"
                         defaultValue={selectedDriver.ExperienceYears}
+                        placeholder="0"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -580,6 +598,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.VehicleTypeAllowed}
+                        placeholder="e.g. Truck, Bus"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -599,6 +618,7 @@ export default function DriverDirectory() {
                         readOnly={modalMode === 'view'}
                         type="date"
                         defaultValue={selectedDriver.JoinDate}
+                        placeholder="YYYY-MM-DD"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -608,6 +628,7 @@ export default function DriverDirectory() {
                         readOnly={modalMode === 'view'}
                         type="number"
                         defaultValue={selectedDriver.Salary}
+                        placeholder="0.00"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -630,6 +651,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.AadhaarNo}
+                        placeholder="XXXX-XXXX-XXXX"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>
@@ -638,6 +660,7 @@ export default function DriverDirectory() {
                       <input
                         readOnly={modalMode === 'view'}
                         defaultValue={selectedDriver.PANNo}
+                        placeholder="ABCDE1234F"
                         className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       />
                     </div>

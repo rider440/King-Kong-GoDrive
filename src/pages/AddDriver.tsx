@@ -130,6 +130,7 @@ export default function AddDriver() {
                     value={formData.DateOfBirth}
                     onChange={handleChange}
                     className="input-field"
+                    placeholder="YYYY-MM-DD"
                     type="date"
                     required
                   />
@@ -304,6 +305,7 @@ export default function AddDriver() {
                     value={formData.LicenseIssueDate}
                     onChange={handleChange}
                     className="input-field"
+                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>
@@ -314,6 +316,7 @@ export default function AddDriver() {
                     value={formData.LicenseExpiryDate}
                     onChange={handleChange}
                     className="input-field"
+                    placeholder="YYYY-MM-DD"
                     type="date"
                     required
                   />
@@ -338,6 +341,7 @@ export default function AddDriver() {
                     value={formData.ExperienceYears}
                     onChange={handleChange}
                     className="input-field"
+                    placeholder="0"
                     type="number"
                     min="0"
                   />
@@ -372,6 +376,7 @@ export default function AddDriver() {
                     value={formData.JoinDate}
                     onChange={handleChange}
                     className="input-field"
+                    placeholder="YYYY-MM-DD"
                     type="date"
                   />
                 </div>

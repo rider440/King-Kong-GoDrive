@@ -334,6 +334,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.VehicleNumber}
+                      placeholder="ABC-1234"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -342,6 +343,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.VehicleType}
+                      placeholder="e.g. Heavy Duty Truck"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -350,6 +352,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.Brand}
+                      placeholder="e.g. Mercedes-Benz"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -358,6 +361,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.Model}
+                      placeholder="e.g. Actros"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -366,6 +370,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.Color}
+                      placeholder="e.g. White"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -374,6 +379,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.ManufacturingYear}
+                      placeholder="YYYY"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -392,6 +398,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.ChassisNumber}
+                      placeholder="MB-ACT-88293"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -400,6 +407,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.EngineNumber}
+                      placeholder="V8-DIESEL-992"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -408,6 +416,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.OwnerName}
+                      placeholder="Full Name"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -451,6 +460,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.FuelCapacity}
+                      placeholder="0"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       type="number"
                     />
@@ -460,6 +470,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.Mileage}
+                      placeholder="0.0"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       type="number"
                     />
@@ -469,6 +480,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.SeatingCapacity}
+                      placeholder="0"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       type="number"
                     />
@@ -488,6 +500,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.InsuranceProvider}
+                      placeholder="e.g. Allianz Fleet"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -496,6 +509,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.InsurancePolicyNumber}
+                      placeholder="POL-88293-X"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -506,6 +520,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.InsuranceExpiryDate}
+                      placeholder="YYYY-MM-DD"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       type="date"
                     />
@@ -515,6 +530,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.FitnessExpiryDate}
+                      placeholder="YYYY-MM-DD"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       type="date"
                     />
@@ -524,6 +540,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.PollutionExpiryDate}
+                      placeholder="YYYY-MM-DD"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       type="date"
                     />
@@ -535,6 +552,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.PermitNumber}
+                      placeholder="PER-88293"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -543,6 +561,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.PermitExpiryDate}
+                      placeholder="YYYY-MM-DD"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       type="date"
                     />
@@ -562,6 +581,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.CurrentLocation}
+                      placeholder="City, State"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                     />
                   </div>
@@ -570,6 +590,7 @@ export default function VehicleDirectory() {
                     <input
                       readOnly={modalMode === 'view'}
                       defaultValue={selectedVehicle.TotalDistanceTravelled}
+                      placeholder="0"
                       className={cn("input-field", modalMode === 'view' && "bg-surface-container-low border-transparent cursor-default")}
                       type="number"
                     />
