@@ -250,12 +250,15 @@ export default function DriverDirectory() {
               {drivers.map((driver) => (
                 <tr key={driver.id} className="hover:bg-surface-container-low transition-colors group">
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-4">
+                    <Link 
+                      to={`/drivers/${driver.id}?tab=overview`}
+                      className="flex items-center gap-4 group/profile"
+                    >
                       <div className="relative">
                         <img
                           src={driver.image}
                           alt={`${driver.FirstName} ${driver.LastName}`}
-                          className="w-10 h-10 rounded-full object-cover ring-2 ring-surface-container"
+                          className="w-10 h-10 rounded-full object-cover ring-2 ring-surface-container group-hover/profile:ring-primary/50 transition-colors"
                         />
                         <div className={cn(
                           "absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full",
@@ -263,10 +266,10 @@ export default function DriverDirectory() {
                         )} />
                       </div>
                       <div>
-                        <p className="font-semibold text-on-surface">{driver.FirstName} {driver.LastName}</p>
+                        <p className="font-semibold text-on-surface group-hover/profile:text-primary transition-colors">{driver.FirstName} {driver.LastName}</p>
                         <p className="text-xs text-on-surface-variant">ID: {driver.id}</p>
                       </div>
-                    </div>
+                    </Link>
                   </td>
                   <td className="px-6 py-4">
                     <p className="text-sm font-medium text-on-surface">{driver.LicenseNumber}</p>
