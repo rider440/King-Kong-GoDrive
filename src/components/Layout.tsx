@@ -23,14 +23,16 @@ import {
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
+import { logoutUser } from '@/src/auth/AuthService';
 
 const NavigationDrawerContent = ({ onNavItemClick }: { onNavItemClick?: () => void }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    logoutUser();
     if (onNavItemClick) onNavItemClick();
-    navigate('/login');
+    navigate('/');
   };
 
   const navItems = [
@@ -176,6 +178,7 @@ export const BottomNavBar = () => {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   const handleLogout = () => {
+    logoutUser();
     setIsMoreOpen(false);
     navigate('/login');
   };

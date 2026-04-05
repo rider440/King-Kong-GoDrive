@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import DriverDirectory from './pages/DriverDirectory';
 import DriverProfile from './pages/DriverProfile';
 import Login from './pages/Login';
+import ProtectedRoute from './auth/ProtectedRoute';
 import AddDriver from './pages/AddDriver';
 import VehicleDirectory from './pages/VehicleDirectory';
 import AddVehicle from './pages/AddVehicle';
@@ -31,22 +32,27 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Layout title="Dashboard"><Dashboard /></Layout>} />
-        <Route path="/drivers" element={<Layout title="Drivers"><DriverDirectory /></Layout>} />
-        <Route path="/drivers/:id" element={<DriverProfile />} />
-        <Route path="/drivers/new" element={<Layout title="Add Driver"><AddDriver /></Layout>} />
-        <Route path="/vehicles" element={<Layout title="Vehicles"><VehicleDirectory /></Layout>} />
-        <Route path="/vehicles/new" element={<Layout title="Add Vehicle"><AddVehicle /></Layout>} />
-        <Route path="/trips" element={<Layout title="Trips"><TripDispatch /></Layout>} />
-        <Route path="/trips/new" element={<Layout title="Dispatch"><TripDispatch /></Layout>} />
-        <Route path="/live" element={<Layout title="Live Map"><LiveTracking /></Layout>} />
-        <Route path="/attendance" element={<Layout title="Attendance"><AttendanceLog /></Layout>} />
-        <Route path="/attendance/bulk" element={<Layout title="Bulk Update"><BulkAttendanceUpdate /></Layout>} />
-        <Route path="/salary" element={<Layout title="Salary"><SalaryPayout /></Layout>} />
-        <Route path="/reports" element={<Layout title="Reports"><Reports /></Layout>} />
-        <Route path="/support" element={<Layout title="Support"><Placeholder title="Support" /></Layout>} />
-        <Route path="/settings" element={<Layout title="Settings"><Placeholder title="Settings" /></Layout>} />
+        {/* Public Routes */}
+        <Route path="/" element={<Login />} />
+
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Layout title="Dashboard"><Dashboard /></Layout>} />
+          <Route path="/drivers" element={<Layout title="Drivers"><DriverDirectory /></Layout>} />
+          <Route path="/drivers/:id" element={<DriverProfile />} />
+          <Route path="/drivers/new" element={<Layout title="Add Driver"><AddDriver /></Layout>} />
+          <Route path="/vehicles" element={<Layout title="Vehicles"><VehicleDirectory /></Layout>} />
+          <Route path="/vehicles/new" element={<Layout title="Add Vehicle"><AddVehicle /></Layout>} />
+          <Route path="/trips" element={<Layout title="Trips"><TripDispatch /></Layout>} />
+          <Route path="/trips/new" element={<Layout title="Dispatch"><TripDispatch /></Layout>} />
+          <Route path="/live" element={<Layout title="Live Map"><LiveTracking /></Layout>} />
+          <Route path="/attendance" element={<Layout title="Attendance"><AttendanceLog /></Layout>} />
+          <Route path="/attendance/bulk" element={<Layout title="Bulk Update"><BulkAttendanceUpdate /></Layout>} />
+          <Route path="/salary" element={<Layout title="Salary"><SalaryPayout /></Layout>} />
+          <Route path="/reports" element={<Layout title="Reports"><Reports /></Layout>} />
+          <Route path="/support" element={<Layout title="Support"><Placeholder title="Support" /></Layout>} />
+          <Route path="/settings" element={<Layout title="Settings"><Placeholder title="Settings" /></Layout>} />
+        </Route>
       </Routes>
     </Router>
   );
