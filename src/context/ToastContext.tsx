@@ -23,16 +23,16 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const showToast = useCallback((message: string, type: ToastType = 'info', title?: string, buttonText?: string) => {
     const id = Math.random().toString(36).substring(2, 9);
-    
+
     // Set default titles if not provided
     const displayTitle = title || (type === 'success' ? 'Success!' : type === 'error' ? 'Error!' : 'Notice');
-    
+
     setToasts((prev) => [...prev, { id, message, type, title: displayTitle, buttonText }]);
 
     // Auto remove after 10 seconds (giving more time for modal interaction)
     setTimeout(() => {
       removeToast(id);
-    }, 10000);
+    }, 3000);
   }, []);
 
   const removeToast = useCallback((id: string) => {

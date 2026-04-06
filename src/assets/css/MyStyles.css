@@ -1,0 +1,13 @@
+.rounded-\[2rem\] {
+    border-radius: 2rem;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+.rounded-b-\[2rem\] {
+    border-bottom-right-radius: 2rem;
+    border-bottom-left-radius: 2rem;
+    /* width: 230px; */
+    padding-bottom: 11px;
+    margin-bottom: -9px;
+}
