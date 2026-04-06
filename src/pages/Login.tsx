@@ -12,9 +12,11 @@ import {
 import { cn } from '@/src/lib/utils';
 import { loginUser } from "../auth/AuthService";
 import { validateLogin } from "../lib/utils";
+import { useToast } from '../context/ToastContext';
 
 export default function Login() {
     const navigate = useNavigate();
+    const { showToast } = useToast();
     const [showPassword, setShowPassword] = useState(false);
 
     // ✅ STATE
@@ -25,7 +27,6 @@ export default function Login() {
 
     const [errors, setErrors] = useState<any>({});
     const [loading, setLoading] = useState(false);
-    const [apiError, setApiError] = useState('');
 
     // ✅ INPUT CHANGE
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +46,6 @@ export default function Login() {
         if (Object.keys(validationErrors).length > 0) return;
 
         setLoading(true);
-        setApiError('');
 
         try {
             const data = await loginUser({
@@ -57,9 +57,11 @@ export default function Login() {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("tokenExpiry", data.tokenExpiry);
 
+                showToast("Login Successful! Welcome back.", "success", "Success!", "Continue");
                 navigate("/dashboard");
             } else {
-                setApiError(data.message || data.errorMessage || data.error || JSON.stringify(data));
+                const errorMsg = data.message || data.errorMessage || data.error || JSON.stringify(data);
+                showToast(errorMsg, "error", "Error!", "Try Again");
             }
 
         } catch (err: any) {
@@ -79,7 +81,7 @@ export default function Login() {
             } else if (err.message) {
                 errorMsg = err.message;
             }
-            setApiError(errorMsg);
+            showToast(errorMsg, "error");
         } finally {
             setLoading(false);
         }
@@ -182,11 +184,6 @@ export default function Login() {
                                 </div>
                                 <p className="text-red-500 text-xs">{errors.password}</p>
                             </div>
-
-                            {/* API Error */}
-                            {apiError && (
-                                <p className="text-red-500 text-sm text-center">{apiError}</p>
-                            )}
 
                             {/* Button */}
                             <button
