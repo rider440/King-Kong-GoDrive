@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Car,
     User,
     Lock,
     Eye,
@@ -60,11 +59,27 @@ export default function Login() {
 
                 navigate("/dashboard");
             } else {
-                setApiError(data.message);
+                setApiError(data.message || data.errorMessage || data.error || JSON.stringify(data));
             }
 
         } catch (err: any) {
-            setApiError(err.response?.data?.message || "Login failed");
+            let errorMsg = "Login failed";
+            if (err.response?.data) {
+                // If it's a direct string from the server
+                if (typeof err.response.data === 'string') {
+                    errorMsg = err.response.data;
+                } else {
+                    // Try to extract common .NET exception/SP error formats
+                    errorMsg =
+                        err.response.data.message ||
+                        err.response.data.ExceptionMessage ||
+                        err.response.data.title ||
+                        JSON.stringify(err.response.data);
+                }
+            } else if (err.message) {
+                errorMsg = err.message;
+            }
+            setApiError(errorMsg);
         } finally {
             setLoading(false);
         }
@@ -75,8 +90,9 @@ export default function Login() {
             {/* TopAppBar */}
             <header className="fixed top-0 w-full z-50 bg-slate-50 dark:bg-slate-950 shadow-sm dark:shadow-none h-16 flex items-center justify-between px-6">
                 <div className="flex items-center gap-2">
-                    <Car className="text-blue-700 dark:text-blue-400" size={24} />
-                    <h1 className="font-semibold text-lg tracking-tight text-blue-700 dark:text-blue-400">FleetCore</h1>
+                    <img src="/logo.png" alt="Logo" className="h-10 w-auto" />
+
+                    <h1 className="font-semibold text-lg tracking-tight text-blue-700 dark:text-blue-400">KING KONG GODRIVE</h1>
                 </div>
                 <div className="hidden md:flex items-center gap-6">
                     <span className="text-blue-800 dark:text-blue-300 font-bold uppercase tracking-widest text-sm">Enterprise</span>

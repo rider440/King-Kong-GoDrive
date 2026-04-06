@@ -36,7 +36,7 @@ const NavigationDrawerContent = ({ onNavItemClick }: { onNavItemClick?: () => vo
   };
 
   const navItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
     { icon: Users, label: 'Drivers', path: '/drivers' },
     { icon: Truck, label: 'Vehicles', path: '/vehicles' },
     { icon: Route, label: 'Trips', path: '/trips' },
@@ -184,7 +184,7 @@ export const BottomNavBar = () => {
   };
 
   const mainNavItems = [
-    { icon: LayoutDashboard, label: 'Home', path: '/' },
+    { icon: LayoutDashboard, label: 'Home', path: '/dashboard' },
     { icon: Users, label: 'Drivers', path: '/drivers' },
     { icon: Truck, label: 'Vehicles', path: '/vehicles' },
     { icon: Route, label: 'Trips', path: '/trips' },
