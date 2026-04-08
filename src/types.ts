@@ -5,9 +5,10 @@ export enum Gender {
 }
 
 export enum PaymentType {
-  Monthly = 'Monthly',
-  Daily = 'Daily',
-  Trip = 'Trip'
+  Cash = 'Cash',
+  BankTransfer = 'Bank Transfer',
+  Online = 'Online',
+  UPI = 'UPI',
 }
 
 export enum OwnershipType {
