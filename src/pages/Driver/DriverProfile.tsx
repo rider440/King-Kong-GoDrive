@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { getDriver, getDriverAttendance, getDrivers } from '@/services/driverService';
+import { Loader2, ShieldCheck, CreditCard } from 'lucide-react';
 import {
     ArrowLeft,
     Bell,
@@ -27,6 +29,7 @@ import {
 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { cn } from '@/lib/utils';
+import AddDriver from './AddDriver';
 
 export default function DriverProfile() {
     const { id } = useParams();
@@ -73,26 +76,181 @@ export default function DriverProfile() {
         setCurrentDate(new Date(viewYear, viewMonth + 1, 1));
     };
 
-    // In a real app, you would fetch driver data based on the ID
-    const driver = {
-        id: id || 'DRV-88293',
-        name: 'Marcus Sterling',
-        empId: '#DRV-88293',
-        status: 'ACTIVE',
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB3u3haQrE0jp9DZJGue_sV856PQR1fn-nPRsAh4oQU18ttxdfCW5L2EyQT1JzHXs-ACi1ZMv55d-tJSbDjDejokGx1RPwSoy2FPPuFBtbTESMknOa2i5GxJDzwQIL3n5gxw0d7C_Nz-VvVabqvktrMbr8v5GH0E7I2KgzoRJMAyAWlhnBUnDRZjU_i7DwwiIlQqeYtL_-MfP-naVL4oZbYYcE0axQezt9uhcjdhmxH0x6o9J1ZadV-bsp5kdRR0NR1QCz3Gb-F2Bc',
-        dob: 'May 12, 1985',
-        gender: 'Male',
-        bloodGroup: 'O Positive',
-        phone: '+1 (555) 234-8890',
-        email: 'm.sterling@fleetlink.com',
-        address: '442 Executive Way, Suite 200, Portland, OR',
-        licenseNo: 'OR-9921-X88L',
-        licenseType: 'Class A CDL',
-        licenseExpiry: 'Dec 15, 2026',
-        earnings: 4850.00,
-        baseSalary: 4000.00,
-        incentives: 950.00,
-        deductions: 100.00
+    const [driverData, setDriverData] = useState<any>(null);
+    const [attendance, setAttendance] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchDriver = async () => {
+        if (!id) return;
+        setIsLoading(true);
+        setError(null);
+        try {
+            console.log('--- Fetching Driver Data for ID:', id, '---');
+            let res;
+            try {
+                res = await getDriver(id as any);
+                console.log('1. Raw API Response (Single):', res);
+            } catch (singleFetchError: any) {
+                console.warn('Single Driver Fetch Failed (likely 404). Attempting fallback to full list...');
+                const listRes = await getDrivers();
+                console.log('1b. Fallback List API Response:', listRes);
+
+                // Discovery for list response
+                const findArray = (obj: any): any[] | null => {
+                    if (Array.isArray(obj)) return obj;
+                    const commonKeys = ['data', 'value', '$values', 'driverList', 'drivers'];
+                    for (const key of commonKeys) {
+                        if (Array.isArray(obj[key])) return obj[key];
+                    }
+                    return null;
+                };
+
+                const array = findArray(listRes) || [];
+                // Search for the driver in the list
+                const searchId = Number(id);
+                res = array.find((d: any) =>
+                    (d.Driver_Id || d.driver_Id || d.driverId || d.id) == searchId
+                );
+
+                if (res) {
+                    console.log('SUCCESS: Driver found in list via fallback discovery!');
+                } else {
+                    console.error('CRITICAL: Driver not found in list either.');
+                    throw singleFetchError; // Rethrow original error if list fallback fails
+                }
+            }
+
+            if (typeof res === 'string' && (res.includes('<!DOCTYPE html>') || res.includes('<html'))) {
+                console.error('CRITICAL: Received HTML instead of JSON. Possible 404/500 redirect.');
+                setError('Backend returned an error page (HTML). Please check your API proxy.');
+                return;
+            }
+
+            // Robust data discovery for single object
+            const findObject = (obj: any): any | null => {
+                if (!obj || typeof obj !== 'object') {
+                    console.warn('findObject: Received non-object', obj);
+                    return null;
+                }
+
+                // 1. If it has common driver keys at the root, it's our object
+                if (obj.FirstName || obj.firstName || obj.Driver_Id || obj.driver_Id || obj.FullName || obj.fullName) {
+                    console.log('findObject: Found driver keys at root');
+                    return obj;
+                }
+
+                // 2. Scan for common wrappers
+                const commonKeys = ['data', 'value', '$values', 'driver', 'Driver', 'items', 'Items'];
+                for (const key of commonKeys) {
+                    if (obj[key] && typeof obj[key] === 'object') {
+                        console.log(`findObject: Found wrapped data in .${key}`);
+                        // If the wrapper is an array, take the first element
+                        if (Array.isArray(obj[key])) return obj[key][0];
+                        return obj[key];
+                    }
+                }
+
+                // 3. If it's a simple object with keys and not an array, it's likely the driver itself
+                if (!Array.isArray(obj) && Object.keys(obj).length > 0) {
+                    console.log('findObject: Returning root object as fallback (no wrapper found)');
+                    return obj;
+                }
+
+                console.warn('findObject: No driver-like object discovered');
+                return null;
+            };
+
+            const data = findObject(res);
+            console.log('2. Discovered Driver Data Object:', data);
+
+            if (data) {
+                // Map to template format using PascalCase from User's sample
+                const mapped = {
+                    id: data.Driver_Id || data.driver_Id || data.driverId || id,
+                    name: data.FullName || data.fullName || `${data.FirstName || data.firstName || ''} ${data.LastName || data.lastName || ''}`.trim() || '[No Name Found]',
+                    empId: `#DRV-${data.Driver_Id || data.driver_Id || data.driverId || id}`,
+                    status: (data.IsActive ?? data.isActive ?? true) ? 'ACTIVE' : 'INACTIVE',
+                    isAvailable: data.IsAvailable ?? data.isAvailable ?? true,
+                    isVerified: data.IsVerified ?? data.isVerified ?? false,
+                    image: data.DriverImagePath || data.driverImagePath || data.image || 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=160&h=160&fit=crop',
+                    dob: (data.DateOfBirth || data.dateOfBirth)?.split('T')[0] || 'N/A',
+                    gender: data.Gender || data.gender || 'N/A',
+                    bloodGroup: data.BloodGroup || data.bloodGroup || 'Not Specified',
+                    phone: data.PhoneNo || data.phoneNo || 'N/A',
+                    alternatePhone: data.AlternatePhoneNo || data.alternatePhoneNo || 'N/A',
+                    email: data.Email || data.email || 'N/A',
+                    address: `${data.AddressLine1 || data.addressLine1 || ''} ${data.AddressLine2 || data.addressLine2 || ''}, ${data.City || data.city || ''}, ${data.State || data.state || ''} ${data.Pincode || data.pincode || ''}, ${data.Country || data.country || ''}`.trim().replace(/^ ,/, '').replace(/, $/, '').replace(/ ,/g, ','),
+                    licenseNo: data.LicenseNumber || data.licenseNumber || 'N/A',
+                    licenseType: data.LicenseType || data.licenseType || 'N/A',
+                    licenseExpiry: (data.LicenseExpiryDate || data.licenseExpiryDate)?.split('T')[0] || 'N/A',
+                    licenseIssuedBy: data.LicenseIssuedBy || data.licenseIssuedBy || 'N/A',
+                    licenseIssueDate: (data.LicenseIssueDate || data.licenseIssueDate)?.split('T')[0] || 'N/A',
+                    aadhaarNo: data.AadhaarNo || data.aadhaarNo || 'Not Provided',
+                    panNo: data.PanNo || data.panNo || data.PANNo || 'Not Provided',
+                    paymentType: data.PaymentType || data.paymentType || 'Cash',
+                    salary: data.Salary || data.salary || 0,
+                    earnings: data.Salary || data.salary || 0,
+                    baseSalary: data.Salary || data.salary || 0,
+                    experienceYears: data.ExperienceYears || data.experienceYears || 0,
+                    vehicleTypeAllowed: data.VehicleTypeAllowed || data.vehicleTypeAllowed || 'N/A',
+                    joinDate: (data.JoinDate || data.joinDate)?.split('T')[0] || 'N/A',
+                    incentives: 0,
+                    deductions: 0
+                };
+                console.log('3. Final Mapped Profile Object:', mapped);
+                setDriverData(mapped);
+            } else {
+                setError('Could not discover driver data in the API response.');
+            }
+        } catch (error: any) {
+            console.error('Error fetching driver profile:', error);
+            setError(`Network Error: ${error?.message || 'Check your connection'}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchAttendance = async () => {
+        if (!id) return;
+        try {
+            const res = await getDriverAttendance(Number(id));
+            const data = Array.isArray(res) ? res : (res?.$values || res?.data || []);
+            setAttendance(data);
+        } catch (error) {
+            console.error('Error fetching attendance:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchDriver();
+        fetchAttendance();
+    }, [id]);
+
+    // Constant reference to the data being displayed
+    const driver = driverData || {
+        id: id || 'Loading...',
+        name: 'Loading...',
+        empId: '#DRV-00000',
+        status: 'PENDING',
+        image: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=160&h=160&fit=crop',
+        dob: 'N/A',
+        gender: 'N/A',
+        bloodGroup: 'N/A',
+        phone: 'N/A',
+        email: 'N/A',
+        address: 'N/A',
+        licenseNo: 'N/A',
+        licenseType: 'N/A',
+        licenseExpiry: 'N/A',
+        earnings: 0,
+        baseSalary: 0,
+        incentives: 0,
+        deductions: 0,
+        aadhaarNo: 'N/A',
+        panNo: 'N/A',
+        paymentType: 'N/A'
     };
 
     return (
@@ -117,18 +275,59 @@ export default function DriverProfile() {
                                 src={driver.image}
                             />
                         </div>
-                        <div className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-lg border border-outline/10">
-                            <CheckCircle size={24} className="text-green-600 fill-green-600/10" />
-                        </div>
+                        {driver.isVerified && (
+                            <div className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-lg border border-outline/10">
+                                <CheckCircle size={24} className="text-green-600 fill-green-600/10" />
+                            </div>
+                        )}
                     </div>
                     <h2 className="text-3xl font-black tracking-tight text-on-surface uppercase">{driver.name}</h2>
                     <p className="text-sm font-bold text-on-surface-variant uppercase tracking-[0.2em] mt-2">Emp ID: {driver.empId}</p>
-                    <div className="mt-4">
-                        <span className="px-4 py-1.5 rounded-full text-xs font-black bg-green-100 text-green-800 border border-green-200 tracking-widest">
+                    <div className="mt-4 flex flex-wrap justify-center gap-3">
+                        <span className={cn(
+                            "px-4 py-1.5 rounded-full text-xs font-black border tracking-widest uppercase",
+                            driver.status === 'ACTIVE'
+                                ? "bg-green-100 text-green-800 border-green-200"
+                                : "bg-red-100 text-red-800 border-red-200"
+                        )}>
                             {driver.status}
                         </span>
+                        <span className={cn(
+                            "px-4 py-1.5 rounded-full text-xs font-black border tracking-widest uppercase",
+                            driver.isAvailable
+                                ? "bg-blue-100 text-blue-800 border-blue-200"
+                                : "bg-amber-100 text-amber-800 border-amber-200"
+                        )}>
+                            {driver.isAvailable ? 'Available' : 'On Trip'}
+                        </span>
+                    </div>
+
+                    <div className="absolute top-8 right-8 flex gap-2">
+                        <button
+                            onClick={() => setIsEditModalOpen(true)}
+                            className="p-2 hover:bg-surface-container rounded-lg text-primary transition-colors flex items-center gap-2 text-[10px] font-black uppercase tracking-widest border border-outline/10"
+                        >
+                            <Edit size={16} />
+                            Edit Profile
+                        </button>
                     </div>
                 </section>
+
+                {error && (
+                    <div className="bg-red-50 border border-red-200 p-6 rounded-2xl flex flex-col items-center text-center gap-3 animate-pulse">
+                        <AlertCircle className="text-red-600" size={32} />
+                        <div>
+                            <p className="text-sm font-black text-red-900 uppercase tracking-widest">Data Sync Error</p>
+                            <p className="text-xs font-bold text-red-700 mt-1 uppercase tracking-tighter">{error}</p>
+                        </div>
+                        <button
+                            onClick={() => fetchDriver()}
+                            className="mt-2 text-[10px] font-black uppercase tracking-widest bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                        >
+                            Retry Sync
+                        </button>
+                    </div>
+                )}
 
                 {/* Tab Navigation */}
                 <div className="flex items-center gap-2 border-b border-outline/5 overflow-x-auto pb-px">
@@ -201,6 +400,17 @@ export default function DriverProfile() {
                                             <p className="text-sm font-bold text-on-surface">{driver.phone}</p>
                                         </div>
                                     </div>
+                                    {driver.alternatePhone && driver.alternatePhone !== 'N/A' && (
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-1.5 bg-surface-container rounded-md text-on-surface-variant">
+                                                <Phone size={16} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Alt Phone Number</p>
+                                                <p className="text-sm font-bold text-on-surface">{driver.alternatePhone}</p>
+                                            </div>
+                                        </div>
+                                    )}
                                     <div className="flex items-start gap-4">
                                         <div className="p-1.5 bg-surface-container rounded-md text-on-surface-variant">
                                             <Mail size={16} />
@@ -248,6 +458,59 @@ export default function DriverProfile() {
                                     </div>
                                 </div>
                             </div>
+                            {/* Legal Identification */}
+                            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-6 border border-outline/5 space-y-6 md:col-span-2">
+                                <div className="flex items-center gap-3 border-b border-outline/5 pb-4">
+                                    <div className="p-2 bg-primary/5 rounded-lg text-primary">
+                                        <ShieldCheck size={20} />
+                                    </div>
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-primary">Identity Verification</h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div className="flex items-start gap-4 p-4 bg-surface-container-low rounded-xl">
+                                        <div className="p-1.5 bg-surface-container rounded-md text-primary">
+                                            <FileText size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest mb-1">Aadhaar Number</p>
+                                            <p className="text-sm font-black font-mono tracking-widest text-on-surface">{driver.aadhaarNo}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-4 p-4 bg-surface-container-low rounded-xl">
+                                        <div className="p-1.5 bg-surface-container rounded-md text-primary">
+                                            <CreditCard size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest mb-1">PAN Card Number</p>
+                                            <p className="text-sm font-black font-mono tracking-widest text-on-surface uppercase">{driver.panNo}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Professional Profile */}
+                            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-6 border-t-4 border-primary border-x border-b border-outline/5 space-y-6 md:col-span-2">
+                                <div className="flex items-center gap-3 border-b border-outline/5 pb-4">
+                                    <div className="p-2 bg-primary/5 rounded-lg text-primary">
+                                        <TrendingUp size={20} />
+                                    </div>
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-primary">Employment Profile</h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Join Date</p>
+                                        <p className="text-sm font-black text-on-surface">{driver.joinDate}</p>
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Experience</p>
+                                        <p className="text-sm font-black text-on-surface">{driver.experienceYears} Years</p>
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <p className="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Allowed Vehicles</p>
+                                        <p className="text-sm font-black text-primary">{driver.vehicleTypeAllowed}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Attendance Calendar Section */}
@@ -285,27 +548,29 @@ export default function DriverProfile() {
 
                                     {/* Actual Days */}
                                     {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
-                                        // Mock status logic - in real app this would come from a database for this specific driver/date
+                                        const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                        const record = attendance.find(a => (a.Date || a.date)?.split('T')[0] === dateStr);
                                         const date = new Date(viewYear, viewMonth, day);
                                         const isToday = new Date().toDateString() === date.toDateString();
                                         const dayOfWeek = date.getDay();
 
-                                        let status = 'present';
-                                        if (dayOfWeek === 0) status = 'off';
-                                        else if (day % 15 === 0) status = 'absent';
-                                        else if (day % 22 === 0) status = 'leave';
+                                        let status = record ? (record.Status || record.status || 'present').toLowerCase() : 'none';
+                                        if (dayOfWeek === 0 && !record) status = 'off';
+                                        if (date > new Date()) status = 'none';
 
                                         return (
                                             <div key={day} className="relative py-2 group cursor-help">
                                                 <span className={cn(
                                                     "text-xs font-bold transition-colors w-8 h-8 flex items-center justify-center mx-auto rounded-lg",
-                                                    isToday ? "bg-primary text-white shadow-sm" : "text-on-surface"
+                                                    isToday ? "bg-primary text-white shadow-sm" : "text-on-surface",
+                                                    status === 'absent' && "bg-red-50 text-red-600",
+                                                    status === 'leave' && "bg-orange-50 text-orange-600"
                                                 )}>
                                                     {day}
                                                 </span>
-                                                {!isToday && (
+                                                {status !== 'none' && !isToday && (
                                                     <div className={cn(
-                                                        "absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full",
+                                                        "absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full tooltip-trigger",
                                                         status === 'present' && "bg-green-500",
                                                         status === 'absent' && "bg-red-500",
                                                         status === 'leave' && "bg-orange-500",
@@ -342,7 +607,7 @@ export default function DriverProfile() {
                                         <h4 className="text-4xl font-black text-white tracking-tighter">${driver.earnings.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h4>
                                     </div>
                                     <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
-                                        <span className="text-[10px] font-black text-white uppercase tracking-widest">Processing</span>
+                                        <span className="text-[10px] font-black text-white uppercase tracking-widest">{driver.paymentType}</span>
                                     </div>
                                 </div>
                                 <div className="p-8 space-y-6">
@@ -507,6 +772,31 @@ export default function DriverProfile() {
                     </div>
                 )}
             </div>
+
+            {isEditModalOpen && (
+                <div className="fixed inset-0 bg-surface/80 backdrop-blur-md flex items-center justify-center z-[100] p-4">
+                    <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-surface rounded-3xl shadow-2xl relative">
+                        <AddDriver
+                            mode="edit"
+                            id={id}
+                            onClose={() => {
+                                setIsEditModalOpen(false);
+                                fetchDriver(); // Refresh after edit
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {isLoading && (
+                <div className="fixed inset-0 bg-surface/50 backdrop-blur-sm flex items-center justify-center z-[60]">
+                    <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 text-center">
+                        <Loader2 size={40} className="animate-spin text-primary" />
+                        <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant">Syncing Live Data...</p>
+                        <p className="text-[10px] font-bold uppercase tracking-tighter text-outline-variant">Optimizing profile details</p>
+                    </div>
+                </div>
+            )}
         </Layout>
     );
 }

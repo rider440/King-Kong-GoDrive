@@ -77,7 +77,8 @@ export interface Driver {
   Salary?: number;
   PaymentType: PaymentType;
   AadhaarNo?: string;
-  PANNo?: string;
+  PanNo?: string;
+  IsActive: boolean;
   IsAvailable: boolean;
   LastActiveTime?: string;
   CreatedAt?: string;
@@ -85,6 +86,7 @@ export interface Driver {
   UpdatedAt?: string;
   UpdatedBy?: string;
   image?: string;
+  DriverImagePath?: string;
 }
 
 export interface Vehicle {

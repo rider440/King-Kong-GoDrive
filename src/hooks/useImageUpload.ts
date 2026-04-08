@@ -6,6 +6,7 @@ interface UseImageUploadReturn {
   error: string | null;
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   clearImage: () => void;
+  setPreview: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export const useImageUpload = (maxSizeInMB: number = 5): UseImageUploadReturn => {
@@ -49,5 +50,5 @@ export const useImageUpload = (maxSizeInMB: number = 5): UseImageUploadReturn =>
     setError(null);
   }, []);
 
-  return { preview, loading, error, handleImageUpload, clearImage };
+  return { preview, loading, error, handleImageUpload, clearImage, setPreview };
 };

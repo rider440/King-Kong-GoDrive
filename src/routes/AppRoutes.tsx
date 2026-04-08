@@ -35,7 +35,11 @@ const AppRoutes = () => (
       <Route path="/dashboard" element={<Layout title="Dashboard"><Dashboard /></Layout>} />
       <Route path="/drivers" element={<Layout title="Drivers"><DriverList /></Layout>} />
       <Route path="/drivers/:id" element={<DriverProfile />} />
-      <Route path="/drivers/new" element={<Layout title="Add Driver"><AddDriver /></Layout>} />
+      {/* Driver actions are now handled via popup on the list page */}
+      {/* <Route path="/drivers/:id/view" element={<Layout title="View Driver"><AddDriver /></Layout>} /> */}
+      {/* <Route path="/drivers/:id/edit" element={<Layout title="Edit Driver"><AddDriver /></Layout>} /> */}
+      {/* <Route path="/drivers/new" element={<Layout title="Add Driver"><AddDriver /></Layout>} /> */}
+      
       <Route path="/vehicles" element={<Layout title="Vehicles"><VehicleList /></Layout>} />
       <Route path="/vehicles/new" element={<Layout title="Add Vehicle"><AddVehicle /></Layout>} />
       <Route path="/trips" element={<Layout title="Trips"><TripDispatch /></Layout>} />
