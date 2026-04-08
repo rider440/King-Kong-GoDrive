@@ -21,9 +21,9 @@ import {
   Moon,
   Sun
 } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
-import { logoutUser } from '@/src/auth/AuthService';
+import { logoutUser } from '@/services/authService';
 
 const NavigationDrawerContent = ({ onNavItemClick }: { onNavItemClick?: () => void }) => {
   const location = useLocation();

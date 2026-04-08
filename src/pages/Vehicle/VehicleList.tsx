@@ -15,8 +15,8 @@ import {
   Save
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { cn } from '@/src/lib/utils';
-import { OwnershipType, FuelType, Vehicle } from '../types';
+import { cn } from '@/lib/utils';
+import { OwnershipType, FuelType, Vehicle } from '@/types';
 
 const vehicles = [
   {

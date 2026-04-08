@@ -25,8 +25,8 @@ import {
     Eye,
     Edit
 } from 'lucide-react';
-import { Layout } from '@/src/components/Layout';
-import { cn } from '@/src/lib/utils';
+import { Layout } from '@/components/layout/Layout';
+import { cn } from '@/lib/utils';
 
 export default function DriverProfile() {
     const { id } = useParams();

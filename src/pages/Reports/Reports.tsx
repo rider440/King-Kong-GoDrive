@@ -10,7 +10,7 @@ import {
   Activity,
   ChevronRight
 } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 
 export default function Reports() {
   return (

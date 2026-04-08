@@ -22,8 +22,8 @@ import {
   Upload
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { cn } from '@/src/lib/utils';
-import { Gender, PaymentType, Driver } from '../types';
+import { cn } from '@/lib/utils';
+import { Gender, PaymentType, Driver } from '@/types';
 
 const drivers = [
   {

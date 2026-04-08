@@ -12,9 +12,9 @@ import {
   FileText,
   Activity
 } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { DriverAttendance, AttendanceStatus } from '../types';
+import { DriverAttendance, AttendanceStatus } from '@/types';
 
 const recentLogs = [
   { name: 'M. Thompson', date: 'Oct 26', time: '08:15 - 17:45', status: 'Verified', color: 'emerald' },

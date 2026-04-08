@@ -86,24 +86,78 @@ It provides real-time monitoring, driver attendance, trip tracking, and analytic
 ```
 king-kong-godrive/
 │
-├── backend/
-│   ├── API (ASP.NET Core)
-│   ├── Controllers
-│   ├── Services
-│   ├── Repository Layer
-│   └── Database Scripts
+├── public/                          # Static assets
+├── src/                             # Frontend application source
 │
-├── frontend/
-│   ├── src/
-│   ├── components/
-│   ├── pages/
-│   ├── services/
-│   └── hooks/
+│   ├── api/                         # API configuration
+│   │   └── axios.ts                 # Axios instance with interceptors
 │
-└── docs/
-    ├── ER Diagram
-    ├── API Docs
-    └── Architecture
+│   ├── services/                    # Feature-based API service layer
+│   │   ├── api.ts                   # Base API config
+│   │   ├── authService.ts           # Authentication API calls
+│   │   ├── driverService.ts         # Driver CRUD & operations
+│   │   ├── vehicleService.ts        # Vehicle CRUD & operations
+│   │   ├── tripService.ts           # Trip/Dispatch operations
+│   │   ├── attendanceService.ts     # Attendance tracking
+│   │   └── salaryService.ts         # Payroll operations
+│
+│   ├── pages/                       # Feature-organized page components
+│   │   ├── Auth/
+│   │   │   └── Login.tsx
+│   │   ├── Dashboard/
+│   │   │   └── Dashboard.tsx
+│   │   ├── Driver/
+│   │   │   ├── DriverList.tsx       # Driver directory/listing
+│   │   │   ├── DriverProfile.tsx    # Single driver details
+│   │   │   └── AddDriver.tsx        # Add/edit driver form
+│   │   ├── Vehicle/
+│   │   │   ├── VehicleList.tsx      # Vehicle directory
+│   │   │   └── AddVehicle.tsx       # Add/edit vehicle
+│   │   ├── Trip/
+│   │   │   ├── TripDispatch.tsx     # Dispatch & trip management
+│   │   │   └── LiveTracking.tsx     # Live vehicle tracking map
+│   │   ├── Attendance/
+│   │   │   ├── AttendanceLog.tsx    # Attendance view
+│   │   │   └── BulkAttendanceUpdate.tsx  # Bulk update tool
+│   │   ├── Salary/
+│   │   │   └── SalaryPayout.tsx     # Payroll & salary processing
+│   │   └── Reports/
+│   │       └── Reports.tsx          # Analytics & reports
+│
+│   ├── components/                  # Reusable UI components
+│   │   ├── layout/
+│   │   │   └── Layout.tsx           # App shell, nav, sidebar
+│   │   ├── Toast.tsx                # Toast notifications
+│   │   └── ...other reusable components
+│
+│   ├── routes/
+│   │   └── AppRoutes.tsx            # Route definitions
+│
+│   ├── hooks/                       # Custom React hooks
+│   │   ├── useForm.ts               # Form state management
+│   │   ├── useLogin.ts              # Login logic
+│   │   ├── useTable.ts              # Table sorting/filtering
+│   │   ├── usePagination.ts         # Pagination logic
+│   │   ├── useImageUpload.ts        # File upload handling
+│   │   ├── useSearch.ts             # Search functionality
+│   │   └── index.ts                 # Barrel export
+│
+│   ├── context/                     # React context providers
+│   │   └── ToastContext.tsx         # Toast notification context
+│
+│   ├── lib/                         # Utility functions
+│   │   └── utils.ts                 # Helper functions (cn, validation)
+│
+│   ├── auth/                        # Auth-related helpers
+│   │   └── ProtectedRoute.tsx       # Route protection HOC
+│
+│   ├── types.ts                     # Shared TypeScript types/enums
+│   ├── App.tsx                      # App entry component
+│   └── main.tsx                     # React DOM bootstrap
+│
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
 ```
 
 ---

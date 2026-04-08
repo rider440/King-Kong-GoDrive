@@ -1,4 +1,4 @@
-import api from "../api/axiosInstance";
+import api from "./api";
 
 export const loginUser = async (data: any) => {
     const params = new URLSearchParams();

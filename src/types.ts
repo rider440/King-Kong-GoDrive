@@ -9,6 +9,9 @@ export enum PaymentType {
   BankTransfer = 'Bank Transfer',
   Online = 'Online',
   UPI = 'UPI',
+  Monthly = 'Monthly',
+  Daily = 'Daily',
+  Trip = 'Trip',
 }
 
 export enum OwnershipType {

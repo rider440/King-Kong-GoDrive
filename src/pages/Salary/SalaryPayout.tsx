@@ -24,10 +24,10 @@ import {
   ShieldCheck,
   Clock
 } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { DriverPayroll, PaymentStatus } from '../types';
+import { DriverPayroll, PaymentStatus } from '@/types';
 
 const payouts = [
   { id: 'PAY-8821', name: 'Julian Rossi', amount: '$3,240.00', date: 'Mar 25, 2024', status: 'Paid', method: 'Direct Deposit' },

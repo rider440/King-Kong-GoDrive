@@ -15,7 +15,7 @@ import {
   Wrench
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { OwnershipType, FuelType, Vehicle } from '../types';
+import { OwnershipType, FuelType, Vehicle } from '@/types';
 
 export default function AddVehicle() {
   const [formData, setFormData] = useState<Partial<Vehicle>>({

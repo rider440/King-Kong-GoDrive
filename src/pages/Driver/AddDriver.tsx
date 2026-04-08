@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   ArrowLeft,
   User,
@@ -16,10 +16,11 @@ import {
   Upload
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Gender, PaymentType, Driver } from '../types';
+import { Gender, PaymentType, Driver } from '@/types';
+import { useForm, useImageUpload } from '@/hooks';
 
 export default function AddDriver() {
-  const [formData, setFormData] = useState<Partial<Driver>>({
+  const initialValues: Partial<Driver> = {
     FirstName: '',
     LastName: '',
     Gender: Gender.Male,
@@ -48,32 +49,16 @@ export default function AddDriver() {
     PANNo: '',
     IsAvailable: true,
     image: ''
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    const val = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
-    setFormData(prev => ({ ...prev, [name]: val }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, image: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const { values: formData, handleChange } = useForm(initialValues);
+  const { preview, handleImageUpload, clearImage } = useImageUpload(2);
 
-  const calculateProgress = () => {
+  const calculateProgress = useMemo(() => {
     const requiredFields = ['FirstName', 'DateOfBirth', 'PhoneNo', 'LicenseNumber', 'LicenseExpiryDate'];
     const filledRequired = requiredFields.filter(f => !!formData[f as keyof Driver]).length;
     return Math.round((filledRequired / requiredFields.length) * 100);
-  };
-
-  const progress = calculateProgress();
+  }, [formData]);
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-24">
@@ -98,8 +83,8 @@ export default function AddDriver() {
             <div className="bg-surface-container-lowest rounded-2xl p-8 space-y-6 shadow-ambient border border-outline/5">
               <div className="flex flex-col md:flex-row items-center gap-6">
                 <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 bg-surface-container border-2 border-outline/10 flex items-center justify-center">
-                  {formData.image ? (
-                    <img src={formData.image} alt="Profile Preview" className="w-full h-full object-cover" />
+                  {preview ? (
+                    <img src={preview} alt="Profile Preview" className="w-full h-full object-cover" />
                   ) : (
                     <User size={32} className="text-outline" />
                   )}
@@ -117,10 +102,10 @@ export default function AddDriver() {
                         onChange={handleImageUpload}
                       />
                     </label>
-                    {formData.image && (
+                    {preview && (
                       <button
                         type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
+                        onClick={clearImage}
                         className="text-error hover:bg-error/10 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
                       >
                         Remove
@@ -504,15 +489,15 @@ export default function AddDriver() {
             <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-4">Onboarding Progress</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-end">
-                <span className="text-3xl font-black">{progress}%</span>
+                <span className="text-3xl font-black">{calculateProgress}%</span>
                 <span className="text-[10px] font-bold uppercase opacity-80">
-                  {progress === 100 ? 'Ready to Save' : 'Required Fields'}
+                  {calculateProgress === 100 ? 'Ready to Save' : 'Required Fields'}
                 </span>
               </div>
               <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-white transition-all duration-500"
-                  style={{ width: `${progress}%` }}
+                  style={{ width: `${calculateProgress}%` }}
                 ></div>
               </div>
             </div>
@@ -533,8 +518,8 @@ export default function AddDriver() {
 
             <div className="mt-12 space-y-3">
               <button
-                className={`btn-primary w-full py-4 text-lg ${progress < 100 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={progress < 100}
+                className={`btn-primary w-full py-4 text-lg ${calculateProgress < 100 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={calculateProgress < 100}
               >
                 <Save size={20} />
                 Save Driver Profile

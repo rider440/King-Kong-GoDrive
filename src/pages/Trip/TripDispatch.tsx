@@ -14,8 +14,8 @@ import {
   CheckCircle2,
   Info
 } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
-import { TripDispatch as TripDispatchType, TripStatus } from '../types';
+import { cn } from '@/lib/utils';
+import { TripDispatch as TripDispatchType, TripStatus } from '@/types';
 
 export default function TripDispatch() {
   const [formData, setFormData] = useState<Partial<TripDispatchType>>({

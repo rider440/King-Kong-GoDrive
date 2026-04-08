@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import {
     User,
     Lock,
@@ -9,83 +8,10 @@ import {
     BarChart3,
     ShieldCheck
 } from 'lucide-react';
-import { cn } from '@/src/lib/utils';
-import { loginUser } from "../auth/AuthService";
-import { validateLogin } from "../lib/utils";
-import { useToast } from '../context/ToastContext';
+import { useLogin } from '@/hooks';
 
 export default function Login() {
-    const navigate = useNavigate();
-    const { showToast } = useToast();
-    const [showPassword, setShowPassword] = useState(false);
-
-    // ✅ STATE
-    const [form, setForm] = useState({
-        username: '',
-        password: ''
-    });
-
-    const [errors, setErrors] = useState<any>({});
-    const [loading, setLoading] = useState(false);
-
-    // ✅ INPUT CHANGE
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    // ✅ SUBMIT
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const validationErrors = validateLogin(form);
-        setErrors(validationErrors);
-
-        if (Object.keys(validationErrors).length > 0) return;
-
-        setLoading(true);
-
-        try {
-            const data = await loginUser({
-                UserName: form.username,
-                PasswordHash: form.password
-            });
-
-            if (data.success) {
-                localStorage.setItem("token", data.token);
-                localStorage.setItem("tokenExpiry", data.tokenExpiry);
-
-                showToast("Login Successful! Welcome back.", "success", "Success!", "Continue");
-                navigate("/dashboard");
-            } else {
-                const errorMsg = data.message || data.errorMessage || data.error || JSON.stringify(data);
-                showToast(errorMsg, "error", "Error!", "Try Again");
-            }
-
-        } catch (err: any) {
-            let errorMsg = "Login failed";
-            if (err.response?.data) {
-                // If it's a direct string from the server
-                if (typeof err.response.data === 'string') {
-                    errorMsg = err.response.data;
-                } else {
-                    // Try to extract common .NET exception/SP error formats
-                    errorMsg =
-                        err.response.data.message ||
-                        err.response.data.ExceptionMessage ||
-                        err.response.data.title ||
-                        JSON.stringify(err.response.data);
-                }
-            } else if (err.message) {
-                errorMsg = err.message;
-            }
-            showToast(errorMsg, "error");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { form, errors, loading, showPassword, handleChange, handleSubmit, togglePasswordVisibility } = useLogin();
 
     return (
         <div className="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
@@ -177,7 +103,7 @@ export default function Login() {
                                     <button
                                         className="absolute inset-y-0 right-0 pr-4 flex items-center text-outline hover:text-primary transition-colors cursor-pointer"
                                         type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
+                                        onClick={togglePasswordVisibility}
                                     >
                                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                     </button>
