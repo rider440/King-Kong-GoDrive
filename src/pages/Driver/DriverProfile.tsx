@@ -170,7 +170,7 @@ export default function DriverProfile() {
                 const mapped = {
                     id: data.Driver_Id || data.driver_Id || data.driverId || id,
                     name: data.FullName || data.fullName || `${data.FirstName || data.firstName || ''} ${data.LastName || data.lastName || ''}`.trim() || '[No Name Found]',
-                    empId: `#DRV-${data.Driver_Id || data.driver_Id || data.driverId || id}`,
+                    empId: data.Driver_Code || data.diver_Code || data.driver_Code || data.Driver_Code,
                     status: (data.IsActive ?? data.isActive ?? true) ? 'ACTIVE' : 'INACTIVE',
                     isAvailable: data.IsAvailable ?? data.isAvailable ?? true,
                     isVerified: data.IsVerified ?? data.isVerified ?? false,

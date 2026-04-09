@@ -69,6 +69,7 @@ export default function DriverDirectory() {
       const mappedDrivers = rawList.map((d: any) => ({
         ...d,
         id: d.Driver_Id || d.driver_Id || d.driverId || d.id,
+        Driver_Code: d.Driver_Code || d.driver_Code || d.driverCode || d.Driver_Code,
         FirstName: d.FirstName || d.firstName || '',
         LastName: d.LastName || d.lastName || '',
         PhoneNo: d.PhoneNo || d.phoneNo || '',
@@ -152,8 +153,8 @@ export default function DriverDirectory() {
                 drivers.map((driver) => (
                   <tr key={driver.id} className="hover:bg-surface-container-low transition-colors group">
                     <td className="px-6 py-4">
-                      <div 
-                        className="flex items-center gap-4 group/profile cursor-pointer" 
+                      <div
+                        className="flex items-center gap-4 group/profile cursor-pointer"
                         onClick={() => navigate(`/drivers/${driver.id}`)}
                       >
                         <div className="relative">
@@ -169,7 +170,7 @@ export default function DriverDirectory() {
                         </div>
                         <div>
                           <p className="font-semibold text-on-surface group-hover/profile:text-primary transition-colors">{driver.FirstName} {driver.LastName}</p>
-                          <p className="text-xs text-on-surface-variant">ID: {driver.id}</p>
+                          <p className="text-xs text-on-surface-variant">ID: {driver.Driver_Code}</p>
                         </div>
                       </div>
                     </td>
