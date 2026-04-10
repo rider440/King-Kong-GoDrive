@@ -53,8 +53,24 @@ const transformDriverForAPI = (driver: any) => {
 };
 
 // Driver-related API calls
-export const getDrivers = async () => {
-  const res = await api.get('/api/Driver/GetAllDriver');
+export interface GetDriversParams {
+  pageNumber?: number;
+  pageSize?: number;
+  search?: string;
+  isActive?: boolean | null;
+  isAvailable?: boolean | null;
+}
+
+export const getDrivers = async (params: GetDriversParams = {}) => {
+  const query: Record<string, any> = {
+    pageNumber: params.pageNumber ?? 1,
+    pageSize: params.pageSize ?? 10,
+  };
+  if (params.search) query.search = params.search;
+  if (params.isActive !== null && params.isActive !== undefined) query.isActive = params.isActive;
+  if (params.isAvailable !== null && params.isAvailable !== undefined) query.isAvailable = params.isAvailable;
+
+  const res = await api.get('/api/Driver/GetAllDriver', { params: query });
   return res.data;
 };
 
