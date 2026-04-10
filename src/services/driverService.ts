@@ -75,20 +75,55 @@ export const getDrivers = async (params: GetDriversParams = {}) => {
 };
 
 export const getDriver = async (id: number) => {
-  const res = await api.get(`/api/Driver/GetDriver/${id}`);
+  const res = await api.get(`/api/Driver/GetDriverById/${id}`);
   return res.data;
 };
 
 export const createDriver = async (data: any) => {
   const apiPayload = transformDriverForAPI(data);
-  const res = await api.post('/api/Driver/AddDriver', apiPayload);
-  return res.data;
+  
+  // Validate required fields
+  const requiredFields = ['FirstName', 'LastName', 'PhoneNo', 'LicenseNumber', 'LicenseExpiryDate', 'DateOfBirth'];
+  const missingFields = requiredFields.filter(field => !apiPayload[field]);
+  
+  if (missingFields.length > 0) {
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+  }
+  
+  console.log('Creating driver with payload:', apiPayload);
+  
+  try {
+    const res = await api.post('/api/Driver/AddDriver', apiPayload);
+    return res.data;
+  } catch (error: any) {
+    console.error('API Error Response:', error.response?.data);
+    console.error('API Error Status:', error.response?.status);
+    console.error('API Error Config:', error.response?.config);
+    throw error;
+  }
 };
 
 export const updateDriver = async (id: number, data: any) => {
   const apiPayload = transformDriverForAPI(data);
-  const res = await api.put(`/api/Driver/UpdateDriver/${id}`, apiPayload);
-  return res.data;
+  
+  // Validate required fields
+  const requiredFields = ['FirstName', 'LastName', 'PhoneNo', 'LicenseNumber', 'LicenseExpiryDate', 'DateOfBirth'];
+  const missingFields = requiredFields.filter(field => !apiPayload[field]);
+  
+  if (missingFields.length > 0) {
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+  }
+  
+  console.log('Updating driver with payload:', apiPayload);
+  
+  try {
+    const res = await api.put(`/api/Driver/UpdateDriver/${id}`, apiPayload);
+    return res.data;
+  } catch (error: any) {
+    console.error('API Error Response:', error.response?.data);
+    console.error('API Error Status:', error.response?.status);
+    throw error;
+  }
 };
 
 export const deleteDriver = async (id: number) => {

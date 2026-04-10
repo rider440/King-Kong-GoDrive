@@ -22,8 +22,9 @@ import { Gender, PaymentType, Driver } from '@/types';
 import AddDriver from './AddDriver';
 import { getDrivers } from '@/services/driverService';
 import { Loader2 } from 'lucide-react';
+import { DriverTableSkeleton } from '@/components/Skeleton';
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export default function DriverDirectory() {
   const navigate = useNavigate();
@@ -42,7 +43,10 @@ export default function DriverDirectory() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(false);
-  const totalPages = totalCount > 0 ? Math.max(1, Math.ceil(totalCount / PAGE_SIZE)) : (hasNextPage ? currentPage + 1 : currentPage);
+  const totalPages = totalCount > 0 ? Math.ceil(totalCount / PAGE_SIZE) : 1;
+  const startIndex = totalCount > 0 ? (currentPage - 1) * PAGE_SIZE + 1 : 0;
+  const endIndex = totalCount > 0 ? Math.min(currentPage * PAGE_SIZE, totalCount) : 0;
+  const showPagination = !isLoading && totalCount > 0 && drivers.length > 0;
 
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
@@ -176,13 +180,26 @@ export default function DriverDirectory() {
     fetchDrivers();
   }, [fetchDrivers]);
 
+  // Scroll to table top when page changes
+  useEffect(() => {
+    if (currentPage > 1) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (totalCount > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalCount, totalPages]);
+
+  // Modal handlers
   const openModal = (mode: 'add' | 'edit' | 'view', id?: string | number) => {
     setModalState({ isOpen: true, mode, id });
   };
 
   const closeModal = () => {
-    setModalState(prev => ({ ...prev, isOpen: false }));
-    fetchDrivers(); // refresh after add/edit
+    setModalState({ isOpen: false, mode: 'add' });
   };
 
   // Status filter label
@@ -313,7 +330,9 @@ export default function DriverDirectory() {
               </tr>
             </thead>
             <tbody className="divide-y divide-outline/5">
-              {drivers.length > 0 ? (
+              {isLoading ? (
+                <DriverTableSkeleton count={PAGE_SIZE} />
+              ) : drivers.length > 0 ? (
                 drivers.map((driver) => (
                   <tr key={driver.id} className="hover:bg-surface-container-low transition-colors group">
                     <td className="px-6 py-4">
@@ -409,64 +428,75 @@ export default function DriverDirectory() {
         </div>
 
         {/* Pagination Footer */}
-        <div className="px-6 py-4 bg-surface-container-low/30 border-t border-outline/5 flex items-center justify-between">
-          <p className="text-xs text-on-surface-variant font-medium">
-            Showing <span className="text-on-surface font-bold">{drivers.length > 0 ? ((currentPage - 1) * PAGE_SIZE) + 1 : 0}</span>
-            {' '}-{' '}
-            <span className="text-on-surface font-bold">{Math.min(currentPage * PAGE_SIZE, totalCount)}</span>
-            {' '}of{' '}
-            <span className="text-on-surface font-bold">{totalCount}</span> precision drivers
-          </p>
-          <div className="flex items-center gap-1">
-            {/* Previous Button */}
-            <button
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className={cn(
-                "p-1.5 rounded-lg transition-colors",
-                currentPage === 1
-                  ? "text-on-surface-variant/30 cursor-not-allowed"
-                  : "text-on-surface-variant hover:bg-surface-container-highest"
-              )}
-            >
-              <ChevronLeft size={16} />
-            </button>
+        {showPagination && (
+          <div className="px-6 py-5 bg-surface-container-low/30 border-t border-outline/5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* Info Section */}
+            <div className="flex flex-col gap-1">
+              <p className="text-xs text-on-surface-variant font-semibold uppercase tracking-widest">
+                Showing <span className="text-on-surface font-bold text-sm">{startIndex}–{endIndex}</span> of <span className="text-on-surface font-bold text-sm">{totalCount}</span>
+              </p>
+              <p className="text-[10px] text-on-surface-variant font-medium">
+                Page <span className="text-on-surface font-bold">{currentPage}</span> of <span className="text-on-surface font-bold">{totalPages}</span>
+              </p>
+            </div>
 
-            {/* Page Numbers */}
-            {getPageNumbers().map((page, idx) =>
-              page === '...' ? (
-                <span key={`dots-${idx}`} className="px-2 text-xs text-on-surface-variant">…</span>
-              ) : (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page as number)}
-                  className={cn(
-                    "px-3 py-1.5 text-xs font-bold rounded-lg transition-colors",
-                    currentPage === page
-                      ? "bg-primary text-white shadow-sm"
-                      : "text-on-surface-variant hover:bg-surface-container-highest"
-                  )}
-                >
-                  {page}
-                </button>
-              )
-            )}
+            {/* Pagination Controls */}
+            <div className="flex items-center gap-2">
+              {/* Previous Button */}
+              <button
+                onClick={() => currentPage > 1 && setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                title="Previous page"
+                className={cn(
+                  "p-2 rounded-lg transition-all",
+                  currentPage === 1
+                    ? "text-on-surface-variant/30 cursor-not-allowed"
+                    : "text-on-surface-variant hover:bg-surface-container-highest hover:text-primary"
+                )}
+              >
+                <ChevronLeft size={18} />
+              </button>
 
-            {/* Next Button */}
-            <button
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className={cn(
-                "p-1.5 rounded-lg transition-colors",
-                currentPage === totalPages
-                  ? "text-on-surface-variant/30 cursor-not-allowed"
-                  : "text-on-surface-variant hover:bg-surface-container-highest"
-              )}
-            >
-              <ChevronRight size={16} />
-            </button>
+              {/* Page Numbers */}
+              <div className="flex items-center gap-1 px-2">
+                {getPageNumbers().map((page, idx) =>
+                  page === '...' ? (
+                    <span key={`dots-${idx}`} className="px-1.5 text-xs text-on-surface-variant font-bold">…</span>
+                  ) : (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page as number)}
+                      className={cn(
+                        "min-w-[32px] h-8 px-2 rounded-lg text-xs font-bold transition-all",
+                        currentPage === page
+                          ? "bg-primary text-white shadow-md"
+                          : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                      )}
+                      title={`Go to page ${page}`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() => currentPage < totalPages && setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+                title="Next page"
+                className={cn(
+                  "p-2 rounded-lg transition-all",
+                  currentPage >= totalPages
+                    ? "text-on-surface-variant/30 cursor-not-allowed"
+                    : "text-on-surface-variant hover:bg-surface-container-highest hover:text-primary"
+                )}
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {isLoading && (

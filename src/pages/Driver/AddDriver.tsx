@@ -224,12 +224,33 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
     e.preventDefault();
     if (isViewMode) return;
 
+    // Validate required fields before submission
+    const requiredFields = {
+      FirstName: 'First Name',
+      LastName: 'Last Name',
+      PhoneNo: 'Phone Number',
+      LicenseNumber: 'License Number',
+      LicenseExpiryDate: 'License Expiry Date',
+      DateOfBirth: 'Date of Birth'
+    };
+
+    const missingFields = Object.entries(requiredFields)
+      .filter(([key]) => !formData[key as keyof typeof formData])
+      .map(([_, label]) => label);
+
+    if (missingFields.length > 0) {
+      showToast(`Please fill all required fields: ${missingFields.join(', ')}`, 'error');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const driverData = {
         ...formData,
         image: preview || formData.image || ''
       };
+
+      console.log('Submitting driver data:', driverData);
 
       if (isEditMode) {
         await updateDriver(Number(currentId), driverData);
@@ -242,7 +263,8 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
       setTimeout(() => handleClose(), 1000);
     } catch (error: any) {
       console.error('Error saving driver:', error);
-      showToast(error.response?.data?.message || 'Failed to save driver', 'error');
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to save driver';
+      showToast(errorMessage, 'error');
     } finally {
       setIsSubmitting(false);
     }
