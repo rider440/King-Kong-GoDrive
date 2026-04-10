@@ -24,6 +24,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { logoutUser } from '@/services/authService';
+import Footer from './Footer';
 
 const NavigationDrawerContent = ({ onNavItemClick }: { onNavItemClick?: () => void }) => {
   const location = useLocation();
@@ -300,6 +301,7 @@ export const BottomNavBar = () => {
 };
 
 export const Layout = ({ children, title }: { children: React.ReactNode; title: string }) => {
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
@@ -321,6 +323,9 @@ export const Layout = ({ children, title }: { children: React.ReactNode; title: 
   }, [theme]);
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
+
+  const footerPaths = ['/drivers', '/vehicles', '/trips', '/trips/new', '/attendance', '/salary', '/reports'];
+  const showFooter = footerPaths.includes(location.pathname);
 
   return (
     <div className="min-h-screen bg-surface-container-lowest text-on-surface font-sans no-scrollbar overflow-x-hidden">
@@ -379,6 +384,7 @@ export const Layout = ({ children, title }: { children: React.ReactNode; title: 
         <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           {children}
         </div>
+        {showFooter && <Footer />}
       </main>
 
       <BottomNavBar />

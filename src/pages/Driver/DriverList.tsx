@@ -77,6 +77,7 @@ export default function DriverDirectory() {
         LicenseNumber: d.LicenseNumber || d.licenseNumber || '',
         LicenseType: d.LicenseType || d.licenseType || '',
         IsAvailable: d.IsAvailable ?? d.isAvailable ?? true,
+        IsActive: d.IsActive ?? d.isActive ?? true,
         image: d.DriverImagePath || d.driverImagePath || d.image || 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop'
       }));
       setDrivers(mappedDrivers);
@@ -130,10 +131,11 @@ export default function DriverDirectory() {
               <Filter size={16} className="mr-2" />
               Status
             </button>
-            <button className="flex items-center px-4 py-2.5 bg-surface-container-high text-on-surface-variant rounded-lg text-sm font-semibold hover:bg-surface-container-highest transition-colors">
+            {/* <button className="flex items-center px-4 py-2.5 bg-surface-container-high text-on-surface-variant rounded-lg text-sm font-semibold hover:bg-surface-container-highest transition-colors">
               <MoreVertical size={16} className="mr-2" />
               Sort
-            </button>
+            </button> */}
+
           </div>
         </div>
 
@@ -144,6 +146,7 @@ export default function DriverDirectory() {
                 <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Profile</th>
                 <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">License</th>
                 <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Contact</th>
+                <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Trip Status</th>
                 <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Status</th>
                 <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant text-right">Actions</th>
               </tr>
@@ -187,7 +190,15 @@ export default function DriverDirectory() {
                         "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset",
                         driver.IsAvailable ? "bg-green-50 text-green-700 ring-green-600/20" : "bg-amber-50 text-amber-700 ring-amber-600/20"
                       )}>
-                        {driver.IsAvailable ? 'Active' : 'Idle'}
+                        {driver.IsAvailable ? 'Available' : 'On Trip'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={cn(
+                        "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset",
+                        driver.IsActive ? "bg-green-50 text-green-700 ring-green-600/20" : "bg-amber-50 text-amber-700 ring-amber-600/20"
+                      )}>
+                        {driver.IsActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
