@@ -25,6 +25,7 @@ import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Gender, PaymentType, Driver } from '@/types';
 import { useForm, useImageUpload } from '@/hooks';
 import { getDriver, updateDriver, createDriver } from '@/services/driverService';
+import { getImageUrl } from '@/services/api';
 import { useToast } from '@/context/ToastContext';
 import { fetchPincodeData } from '@/services/pincodeService';
 import { cn } from '@/lib/utils';
@@ -32,10 +33,11 @@ import { cn } from '@/lib/utils';
 interface AddDriverProps {
   mode?: 'add' | 'edit' | 'view';
   id?: string | number;
-  onClose?: () => void;
+  onClose?: (refresh?: boolean) => void;
 }
 
 export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDriverProps) {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingPincode, setIsLoadingPincode] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
@@ -146,7 +148,7 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
           AadhaarNo: data.aadhaarNo || data.AadhaarNo || '',
           PanNo: data.panNo || data.PanNo || data.PANNo || '',
           IsAvailable: data.isAvailable ?? data.IsAvailable ?? true,
-          image: data.driverImagePath || data.driverImage || data.image || ''
+          image: getImageUrl(data.driverImagePath || data.driverImage || data.image)
         };
         setValues(mappedData);
         if (mappedData.image) {
@@ -212,9 +214,10 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
     return () => clearTimeout(timeoutId);
   }, [formData.Pincode, isViewMode]);
 
-  const handleClose = () => {
+  const handleClose = (refresh?: boolean | React.MouseEvent) => {
+    const shouldRefresh = refresh === true;
     if (onClose) {
-      onClose();
+      onClose(shouldRefresh);
     } else {
       navigate('/drivers');
     }
@@ -253,14 +256,14 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
       console.log('Submitting driver data:', driverData);
 
       if (isEditMode) {
-        await updateDriver(Number(currentId), driverData);
+        await updateDriver(Number(currentId), driverData, selectedFile);
         showToast('Driver updated successfully!', 'success');
-      } else {
-        await createDriver(driverData);
+      } else {  
+        await createDriver(driverData, selectedFile);
         showToast('Driver added successfully!', 'success');
       }
 
-      setTimeout(() => handleClose(), 1000);
+      setTimeout(() => handleClose(true), 1000);
     } catch (error: any) {
       console.error('Error saving driver:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Failed to save driver';
@@ -327,7 +330,18 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
                   <label className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg cursor-pointer transition-colors text-sm font-semibold inline-flex items-center gap-2">
                     <Upload size={16} />
                     Upload Image
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setSelectedFile(file);   // ✅ store file
+                          handleImageUpload(e);    // preview
+                        }
+                      }}
+                    />
                   </label>
                   {preview && (
                     <button type="button" onClick={clearImage} className="text-error hover:bg-error/10 px-4 py-2 rounded-lg text-sm font-semibold transition-colors">

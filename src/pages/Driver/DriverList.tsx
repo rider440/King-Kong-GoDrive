@@ -22,6 +22,7 @@ import { Gender, PaymentType, Driver } from '@/types';
 import AddDriver from './AddDriver';
 import { getDrivers } from '@/services/driverService';
 import { Loader2 } from 'lucide-react';
+import { getImageUrl } from '@/services/api';
 import { DriverTableSkeleton } from '@/components/Skeleton';
 
 const PAGE_SIZE = 10;
@@ -85,92 +86,49 @@ export default function DriverDirectory() {
   const fetchDrivers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const params: any = {
+      const params = {
         pageNumber: currentPage,
         pageSize: PAGE_SIZE,
+        search: debouncedSearch || undefined,
+        isActive: statusFilter === 'all' ? undefined : true,
+        isAvailable:
+          statusFilter === 'available'
+            ? true
+            : statusFilter === 'notAvailable'
+              ? false
+              : undefined,
       };
-      if (debouncedSearch) params.search = debouncedSearch;
-      if (statusFilter === 'available') {
-        params.isActive = true;
-        params.isAvailable = true;
-      } else if (statusFilter === 'notAvailable') {
-        params.isActive = true;
-        params.isAvailable = false;
-      }
 
       const res = await getDrivers(params);
-      console.log('Driver API Response:', res);
-      console.log('Response keys:', res && typeof res === 'object' ? Object.keys(res) : 'not an object');
 
-      // Extract totalCount from the response — check common names then scan all keys
-      let extractedTotal = 0;
-      if (res && typeof res === 'object' && !Array.isArray(res)) {
-        // 1. Check well-known field names first
-        extractedTotal = res.totalCount ?? res.TotalCount ?? res.totalRecords ?? res.TotalRecords
-          ?? res.total ?? res.Total ?? res.count ?? res.Count
-          ?? res.recordCount ?? res.RecordCount ?? res.totalItems ?? res.TotalItems ?? 0;
+      console.log("👉 FULL RESPONSE:", res);
 
-        // 2. If still 0, scan all keys for any numeric field with "total" or "count" in its name
-        if (extractedTotal === 0) {
-          for (const key of Object.keys(res)) {
-            if (typeof res[key] === 'number' && /total|count|records/i.test(key)) {
-              extractedTotal = res[key];
-              console.log(`Found totalCount in field "${key}":`, extractedTotal);
-              break;
-            }
-          }
-        }
-      }
+      // ✅ Extract from your API structure
+      const rawList = res?.data?.data || [];
+      const total = res?.data?.totalRecords || 0;
 
-      // Deep search for an array in the response (useful for .NET $values or wrapped responses)
-      const findArray = (obj: any): any[] | null => {
-        if (Array.isArray(obj)) return obj;
-        if (!obj || typeof obj !== 'object') return null;
-
-        // 1. Check common wrapper properties first (PascalCase and camelCase)
-        const commonKeys = ['data', 'value', '$values', 'items', 'drivers', 'driverList', 'Data', 'Value', 'Items', 'Drivers'];
-        for (const key of commonKeys) {
-          if (Array.isArray(obj[key])) return obj[key];
-        }
-
-        // 2. Scan all properties for any array
-        for (const key in obj) {
-          if (Array.isArray(obj[key])) return obj[key];
-        }
-
-        // 3. Check for Axios-like nested data
-        if (obj.data && typeof obj.data === 'object') {
-          return findArray(obj.data);
-        }
-
-        return null;
-      };
-
-      const rawList = findArray(res) || [];
-
-      // If API returned totalCount, use it. Otherwise use "hasMore" logic.
-      setTotalCount(extractedTotal);
-      // If current page returned a full page of results, there's likely a next page
-      setHasNextPage(rawList.length >= PAGE_SIZE);
-
-      // Map API data to component display format
+      // ✅ MAP DATA (VERY IMPORTANT)
       const mappedDrivers = rawList.map((d: any) => ({
-        ...d,
-        id: d.Driver_Id || d.driver_Id || d.driverId || d.id,
-        Driver_Code: d.Driver_Code || d.driver_Code || d.driverCode || d.Driver_Code,
-        FirstName: d.FirstName || d.firstName || '',
-        LastName: d.LastName || d.lastName || '',
-        PhoneNo: d.PhoneNo || d.phoneNo || '',
-        Email: d.Email || d.email || '',
-        LicenseNumber: d.LicenseNumber || d.licenseNumber || '',
-        LicenseType: d.LicenseType || d.licenseType || '',
-        IsAvailable: d.IsAvailable ?? d.isAvailable ?? true,
-        IsActive: d.IsActive ?? d.isActive ?? true,
-        image: d.DriverImagePath || d.driverImagePath || d.image || 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop'
+        id: d.driver_Id,
+        Driver_Code: d.driver_Code,
+        FirstName: d.firstName,
+        LastName: d.lastName,
+        PhoneNo: d.phoneNo,
+        Email: d.email,
+        LicenseNumber: d.licenseNumber,
+        LicenseType: d.licenseType,
+        IsAvailable: d.isAvailable,
+        IsActive: d.isActive,
+        image: getImageUrl(d.driverImagePath)
       }));
+
+      console.log("👉 MAPPED DATA:", mappedDrivers);
+
       setDrivers(mappedDrivers);
+      setTotalCount(total);
+
     } catch (error) {
-      console.error('Error fetching drivers:', error);
+      console.error("❌ ERROR:", error);
     } finally {
       setIsLoading(false);
     }
@@ -198,8 +156,9 @@ export default function DriverDirectory() {
     setModalState({ isOpen: true, mode, id });
   };
 
-  const closeModal = () => {
+  const closeModal = (refresh?: boolean) => {
     setModalState({ isOpen: false, mode: 'add' });
+    if (refresh) fetchDrivers();
   };
 
   // Status filter label

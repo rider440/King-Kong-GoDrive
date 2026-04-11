@@ -16,3 +16,10 @@ axiosInstance.interceptors.request.use((config) => {
 });
 
 export default axiosInstance;
+
+export const getImageUrl = (path: string | null | undefined): string => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const baseUrl = 'https://localhost:7112'; // Backend base URL
+    return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+};

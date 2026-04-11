@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getDriver, getDriverAttendance, getDrivers } from '@/services/driverService';
+import { getImageUrl } from '@/services/api';
 import { Loader2, ShieldCheck, CreditCard } from 'lucide-react';
 import {
     ArrowLeft,
@@ -174,7 +175,7 @@ export default function DriverProfile() {
                     status: (data.IsActive ?? data.isActive ?? true) ? 'ACTIVE' : 'INACTIVE',
                     isAvailable: data.IsAvailable ?? data.isAvailable ?? true,
                     isVerified: data.IsVerified ?? data.isVerified ?? false,
-                    image: data.DriverImagePath || data.driverImagePath || data.image || 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=160&h=160&fit=crop',
+                    image: getImageUrl(data.DriverImagePath || data.driverImagePath || data.image) || 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=160&h=160&fit=crop',
                     dob: (data.DateOfBirth || data.dateOfBirth)?.split('T')[0] || 'N/A',
                     gender: data.Gender || data.gender || 'N/A',
                     bloodGroup: data.BloodGroup || data.bloodGroup || 'Not Specified',
