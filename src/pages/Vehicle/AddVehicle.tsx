@@ -14,7 +14,7 @@ import {
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { OwnershipType, FuelType, Vehicle } from '@/types';
 import { useForm } from '@/hooks';
-import { getVehicle, updateVehicle, createVehicle } from '@/services/vehicleService';
+import { getVehicle, updateVehicle, createVehicle, getVehicles } from '@/services/vehicleService';
 import { useToast } from '@/context/ToastContext';
 import { cn } from '@/lib/utils';
 
@@ -77,16 +77,95 @@ export default function AddVehicle({ mode: propMode, id: propId, onClose }: AddV
 
       setIsLoadingData(true);
       try {
-        const res = await getVehicle(currentId as any);
+        let res;
+        try {
+          res = await getVehicle(Number(currentId));
+        } catch (singleFetchError: any) {
+          console.warn('Single Vehicle Fetch Failed. Attempting fallback...');
+          const listRes = await getVehicles({ pageSize: 1000 });
+          
+          const findArrayInObject = (obj: any): any[] | null => {
+            if (Array.isArray(obj)) return obj;
+            if (!obj || typeof obj !== 'object') return null;
+            
+            // Look for common array keys
+            const commonKeys = ['data', 'value', '$values', 'dataList', 'vehicles', 'items'];
+            for (const key of commonKeys) {
+              if (obj[key] && Array.isArray(obj[key]?.data || obj[key])) {
+                return obj[key]?.data || obj[key];
+              }
+            }
+            
+            // Recursive scan for ANY array that looks like vehicle data
+            for (const key in obj) {
+              if (Array.isArray(obj[key])) {
+                const first = obj[key][0];
+                if (first && (first.VehicleNumber || first.vehicleNumber || first.Vehicle_Id || first.vehicle_Id)) {
+                  return obj[key];
+                }
+              } else if (obj[key] && typeof obj[key] === 'object') {
+                const found = findArrayInObject(obj[key]);
+                if (found) return found;
+              }
+            }
+            return null;
+          };
+
+          const array = findArrayInObject(listRes) || [];
+          const searchId = String(currentId);
+          res = array.find((v: any) => 
+            String(v.Vehicle_Id || v.vehicle_Id || v.VehicleId || v.id) === searchId
+          );
+          if (!res) throw singleFetchError;
+        }
+
+        const findObject = (obj: any): any | null => {
+          if (!obj || typeof obj !== 'object') return null;
+          if (obj.VehicleNumber || obj.vehicleNumber || obj.Vehicle_Id || obj.vehicle_Id) return obj;
+          
+          const commonKeys = ['data', 'value', '$values', 'vehicle', 'Vehicle'];
+          for (const key of commonKeys) {
+            if (obj[key] && typeof obj[key] === 'object') {
+              if (Array.isArray(obj[key])) return obj[key][0];
+              return obj[key];
+            }
+          }
+
+          // Scan all object properties for a vehicle-like object
+          for (const key in obj) {
+            const val = obj[key];
+            if (val && typeof val === 'object' && !Array.isArray(val)) {
+              if (val.VehicleNumber || val.vehicleNumber || val.Vehicle_Id || val.vehicle_Id) return val;
+            }
+          }
+
+          return obj;
+        };
+
+        const data = findObject(res);
         
-        // Handle different API response structures
-        const data = res?.data || res;
-        
-        if (!data) throw new Error('Vehicle data not found');
+        if (!data) throw new Error('Vehicle asset intel could not be decoded');
 
         const mappedData = {
           ...data,
-          ManufacturingYear: data.manufacturingYear || data.ManufacturingYear || new Date().getFullYear(),
+          Vehicle_Id: data.vehicle_Id || data.Vehicle_Id || currentId,
+          VehicleNumber: data.vehicleNumber || data.VehicleNumber || '',
+          VehicleType: data.vehicleType || data.VehicleType || '',
+          Brand: data.brand || data.Brand || '',
+          Model: data.model || data.Model || '',
+          Color: data.color || data.Color || '',
+          OwnerName: data.ownerName || data.OwnerName || '',
+          OwnershipType: data.ownershipType || data.OwnershipType || OwnershipType.Company,
+          FuelType: data.fuelType || data.FuelType || FuelType.Diesel,
+          FuelCapacity: data.fuelCapacity || data.FuelCapacity || 0,
+          Mileage: data.mileage || data.Mileage || 0,
+          SeatingCapacity: data.seatingCapacity || data.SeatingCapacity || 0,
+          InsuranceProvider: data.insuranceProvider || data.InsuranceProvider || '',
+          InsurancePolicyNumber: data.insurancePolicyNumber || data.InsurancePolicyNumber || '',
+          PermitNumber: data.permitNumber || data.PermitNumber || '',
+          CurrentLocation: data.currentLocation || data.CurrentLocation || '',
+          TotalDistanceTravelled: data.totalDistanceTravelled || data.TotalDistanceTravelled || 0,
+          ManufacturingYear: Number(data.manufacturingYear || data.ManufacturingYear) || new Date().getFullYear(),
           InsuranceExpiryDate: (data.insuranceExpiryDate || data.InsuranceExpiryDate)?.split('T')[0] || '',
           FitnessExpiryDate: (data.fitnessExpiryDate || data.FitnessExpiryDate)?.split('T')[0] || '',
           PermitExpiryDate: (data.permitExpiryDate || data.PermitExpiryDate)?.split('T')[0] || '',
@@ -98,9 +177,9 @@ export default function AddVehicle({ mode: propMode, id: propId, onClose }: AddV
         setValues(mappedData);
       } catch (error) {
         console.error('Error fetching vehicle:', error);
-        showToast('Failed to load vehicle data', 'error');
-        if (onClose) onClose();
-        else navigate('/vehicles');
+        showToast('Warning: Failed to sync full asset data. You can still fill the details manually.', 'error');
+        // REASON: We DO NOT close the modal or navigate away anymore. 
+        // This ensures the user stays in "Edit Mode" as requested.
       } finally {
         setIsLoadingData(false);
       }
@@ -152,7 +231,21 @@ export default function AddVehicle({ mode: propMode, id: propId, onClose }: AddV
       setTimeout(() => handleClose(true), 1000);
     } catch (error: any) {
       console.error('Error saving vehicle:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to save vehicle';
+      
+      let errorMessage = 'Failed to save vehicle';
+      
+      if (error.response?.data?.errors) {
+        // Handle validation errors from ASP.NET Core
+        const validationErrors = error.response.data.errors;
+        const firstErrorKey = Object.keys(validationErrors)[0];
+        const firstErrorMessage = validationErrors[firstErrorKey][0];
+        errorMessage = `${firstErrorKey}: ${firstErrorMessage}`;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       showToast(errorMessage, 'error');
     } finally {
       setIsSubmitting(false);
@@ -217,27 +310,27 @@ export default function AddVehicle({ mode: propMode, id: propId, onClose }: AddV
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Vehicle Number *</label>
-              <input name="VehicleNumber" value={formData.VehicleNumber} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
+              <input name="VehicleNumber" value={formData.VehicleNumber} placeholder="e.g. MH 12 AB 1234" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Vehicle Type *</label>
-              <input name="VehicleType" value={formData.VehicleType} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
+              <input name="VehicleType" value={formData.VehicleType} placeholder="e.g. Truck, Van, Tipper" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Brand *</label>
-              <input name="Brand" value={formData.Brand} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
+              <input name="Brand" value={formData.Brand} placeholder="e.g. Tata, Mahindra, Ashok Leyland" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Model *</label>
-              <input name="Model" value={formData.Model} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
+              <input name="Model" value={formData.Model} placeholder="e.g. Signa 4825.TK, Bolero Neo" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Color</label>
-              <input name="Color" value={formData.Color} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="Color" value={formData.Color} placeholder="e.g. White, Arctic Blue" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Manufacturing Year</label>
-              <input name="ManufacturingYear" type="number" value={formData.ManufacturingYear} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="ManufacturingYear" type="number" value={formData.ManufacturingYear} placeholder="e.g. 2023" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
           </div>
         </div>
@@ -251,15 +344,15 @@ export default function AddVehicle({ mode: propMode, id: propId, onClose }: AddV
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Chassis Number</label>
-              <input name="ChassisNumber" value={formData.ChassisNumber} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="ChassisNumber" value={formData.ChassisNumber} placeholder="e.g. MAT1234567890ABC" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Engine Number</label>
-              <input name="EngineNumber" value={formData.EngineNumber} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="EngineNumber" value={formData.EngineNumber} placeholder="e.g. ENG9876543210" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Owner Name</label>
-              <input name="OwnerName" value={formData.OwnerName} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="OwnerName" value={formData.OwnerName} placeholder="e.g. Ramesh Transport Corp." readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Ownership Type</label>
@@ -313,11 +406,11 @@ export default function AddVehicle({ mode: propMode, id: propId, onClose }: AddV
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Insurance Provider</label>
-              <input name="InsuranceProvider" value={formData.InsuranceProvider} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="InsuranceProvider" value={formData.InsuranceProvider} placeholder="e.g. ICICI Lombard" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Policy Number</label>
-              <input name="InsurancePolicyNumber" value={formData.InsurancePolicyNumber} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="InsurancePolicyNumber" value={formData.InsurancePolicyNumber} placeholder="e.g. POL/1234/5678/09" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Insurance Expiry</label>
@@ -329,7 +422,7 @@ export default function AddVehicle({ mode: propMode, id: propId, onClose }: AddV
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Permit Number</label>
-              <input name="PermitNumber" value={formData.PermitNumber} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="PermitNumber" value={formData.PermitNumber} placeholder="e.g. P-12345/MH/2023" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Permit Expiry</label>
@@ -351,7 +444,7 @@ export default function AddVehicle({ mode: propMode, id: propId, onClose }: AddV
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Current Location</label>
-              <input name="CurrentLocation" value={formData.CurrentLocation} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="CurrentLocation" value={formData.CurrentLocation} placeholder="e.g. Navi Mumbai, Maharashtra" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Total Distance (KM)</label>

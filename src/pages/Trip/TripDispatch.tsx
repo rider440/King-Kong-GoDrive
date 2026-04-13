@@ -300,7 +300,7 @@ export default function TripDispatch() {
 
               <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden border border-outline/5">
                 <div
-                  className="bg-primary h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)]"
+                  className="bg-primary h-full rounded-full transition-all duration-700 ease-out shadow-primary-glow"
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>

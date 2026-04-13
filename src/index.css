@@ -20,9 +20,10 @@
   --color-tertiary-fixed: #ffdbcc;
   --color-on-tertiary-fixed-variant: #7b2f00;
 
-  --shadow-ambient: 0 12px 32px -4px rgba(25, 28, 29, 0.06);
-  --shadow-primary-glow: 0 0 15px rgba(0, 242, 255, 0.3);
-  --shadow-primary-glow-hover: 0 0 25px rgba(0, 242, 255, 0.5);
+  --primary-rgb: 0,63,135;
+  --shadow-ambient: 0 12px 32px -4px rgba(25,28,29,0.06);
+  --shadow-primary-glow: 0 0 15px rgba(0,63,135,0.3);
+  --shadow-primary-glow-hover: 0 0 25px rgba(0,63,135,0.5);
 }
 
 .dark {
@@ -42,7 +43,8 @@
   --color-tertiary-fixed: #3a003a;
   --color-on-tertiary-fixed-variant: #ff00ff;
 
-  --shadow-ambient: 0 0 20px rgba(0, 242, 255, 0.1);
+  --primary-rgb: 0,242,255;
+  --shadow-ambient: 0 0 20px rgba(0,242,255,0.1);
 }
 
 @layer base {

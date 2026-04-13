@@ -33,6 +33,15 @@ export default function VehicleProfile() {
     navigate(`/vehicles/${id}?tab=${tab}`, { replace: true });
   };
 
+  // Auto-open edit modal if query param is present
+  useEffect(() => {
+    if (queryParams.get('edit') === 'true') {
+      setIsEditModalOpen(true);
+      // Clean up the URL to prevent re-opening on manual refresh if desired, 
+      // but keeping it for now to match implementation plan.
+    }
+  }, [location.search]);
+
   const fetchVehicle = async () => {
     if (!id) return;
     setIsLoading(true);
@@ -45,21 +54,35 @@ export default function VehicleProfile() {
         console.warn('Single Vehicle Fetch Failed. Attempting fallback to full list...');
         const listRes = await getVehicles({ pageSize: 1000 }); // High page size to find the asset
         
-        const findArray = (obj: any): any[] | null => {
+        const findArrayInObject = (obj: any): any[] | null => {
           if (Array.isArray(obj)) return obj;
-          const commonKeys = ['data', 'value', '$values', 'dataList', 'vehicles'];
+          if (!obj || typeof obj !== 'object') return null;
+          
+          const commonKeys = ['data', 'value', '$values', 'dataList', 'vehicles', 'items'];
           for (const key of commonKeys) {
             if (obj[key] && Array.isArray(obj[key]?.data || obj[key])) {
               return obj[key]?.data || obj[key];
             }
           }
+          
+          for (const key in obj) {
+            if (Array.isArray(obj[key])) {
+              const first = obj[key][0];
+              if (first && (first.VehicleNumber || first.vehicleNumber || first.Vehicle_Id || first.vehicle_Id)) {
+                return obj[key];
+              }
+            } else if (obj[key] && typeof obj[key] === 'object') {
+              const found = findArrayInObject(obj[key]);
+              if (found) return found;
+            }
+          }
           return null;
         };
 
-        const array = findArray(listRes) || [];
-        const searchId = Number(id);
+        const array = findArrayInObject(listRes) || [];
+        const searchId = String(id);
         res = array.find((v: any) => 
-          (v.Vehicle_Id || v.vehicle_Id || v.VehicleId || v.id) == searchId
+          String(v.Vehicle_Id || v.vehicle_Id || v.VehicleId || v.id) === searchId
         );
 
         if (!res) throw singleFetchError;
@@ -77,6 +100,14 @@ export default function VehicleProfile() {
             return obj[key];
           }
         }
+
+        for (const key in obj) {
+          const val = obj[key];
+          if (val && typeof val === 'object' && !Array.isArray(val)) {
+            if (val.VehicleNumber || val.vehicleNumber || val.Vehicle_Id || val.vehicle_Id) return val;
+          }
+        }
+
         return obj;
       };
 

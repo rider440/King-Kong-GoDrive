@@ -8,25 +8,25 @@ const transformVehicleForAPI = (vehicle: any) => {
     VehicleType: vehicle.VehicleType,
     Brand: vehicle.Brand,
     Model: vehicle.Model,
-    Color: vehicle.Color,
-    ManufacturingYear: vehicle.ManufacturingYear,
-    ChassisNumber: vehicle.ChassisNumber,
-    EngineNumber: vehicle.EngineNumber,
-    OwnerName: vehicle.OwnerName,
+    Color: vehicle.Color || '',
+    ManufacturingYear: Number(vehicle.ManufacturingYear) || new Date().getFullYear(),
+    ChassisNumber: vehicle.ChassisNumber || '',
+    EngineNumber: vehicle.EngineNumber || '',
+    OwnerName: vehicle.OwnerName || '',
     OwnershipType: vehicle.OwnershipType,
     FuelType: vehicle.FuelType,
-    FuelCapacity: vehicle.FuelCapacity,
-    Mileage: vehicle.Mileage,
-    SeatingCapacity: vehicle.SeatingCapacity,
-    InsuranceProvider: vehicle.InsuranceProvider,
-    InsurancePolicyNumber: vehicle.InsurancePolicyNumber,
+    FuelCapacity: Number(vehicle.FuelCapacity) || 0,
+    Mileage: Number(vehicle.Mileage) || 0,
+    SeatingCapacity: Number(vehicle.SeatingCapacity) || 0,
+    InsuranceProvider: vehicle.InsuranceProvider || '',
+    InsurancePolicyNumber: vehicle.InsurancePolicyNumber || '',
     InsuranceExpiryDate: vehicle.InsuranceExpiryDate,
     FitnessExpiryDate: vehicle.FitnessExpiryDate,
-    PermitNumber: vehicle.PermitNumber,
+    PermitNumber: vehicle.PermitNumber || '',
     PermitExpiryDate: vehicle.PermitExpiryDate,
     PollutionExpiryDate: vehicle.PollutionExpiryDate,
-    CurrentLocation: vehicle.CurrentLocation,
-    TotalDistanceTravelled: vehicle.TotalDistanceTravelled,
+    CurrentLocation: vehicle.CurrentLocation || '',
+    TotalDistanceTravelled: Number(vehicle.TotalDistanceTravelled) || 0,
     IsActive: vehicle.IsActive ?? true,
     IsAvailable: vehicle.IsAvailable ?? true
   };
@@ -55,23 +55,45 @@ export const getVehicles = async (params: GetVehiclesParams = {}) => {
 };
 
 export const getVehicle = async (id: number) => {
-  const res = await api.get(`/api/Vehicle/GetVehicleById/${id}`);
+  // Try the most standard REST endpoint first, as GetVehicleById is returning 404
+  const res = await api.get(`/api/Vehicle/${id}`);
   return res.data;
 };
 
 export const createVehicle = async (data: any) => {
-  const apiPayload = transformVehicleForAPI(data);
-  const res = await api.post('/api/Vehicle/AddVehicle', apiPayload);
-  return res.data;
+  const payload = transformVehicleForAPI(data);
+  const formData = new FormData();
+
+  Object.keys(payload).forEach(key => {
+    formData.append(key, (payload as any)[key] !== null && (payload as any)[key] !== undefined ? String((payload as any)[key]) : '');
+  });
+
+  try {
+    const res = await api.post('/api/Vehicle/AddVehicle', formData);
+    return res.data;
+  } catch (error: any) {
+    console.error("❌ ERROR ADDING VEHICLE:", error.response?.data);
+    throw error;
+  }
 };
 
 export const updateVehicle = async (id: number, data: any) => {
-  const apiPayload = {
-    ...transformVehicleForAPI(data),
-    Vehicle_Id: id
-  };
-  const res = await api.put('/api/Vehicle/UpdateVehicle', apiPayload);
-  return res.data;
+  const payload = transformVehicleForAPI(data);
+  const formData = new FormData();
+
+  Object.keys(payload).forEach(key => {
+    formData.append(key, (payload as any)[key] !== null && (payload as any)[key] !== undefined ? String((payload as any)[key]) : '');
+  });
+
+  formData.append("Vehicle_Id", id.toString());
+
+  try {
+    const res = await api.put('/api/Vehicle/UpdateVehicle', formData);
+    return res.data;
+  } catch (error: any) {
+    console.error("❌ ERROR UPDATING VEHICLE:", error.response?.data);
+    throw error;
+  }
 };
 
 export const deleteVehicle = async (id: number) => {

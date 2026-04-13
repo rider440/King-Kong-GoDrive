@@ -364,11 +364,11 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">First Name *</label>
-              <input name="FirstName" value={formData.FirstName} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
+              <input name="FirstName" value={formData.FirstName} placeholder="e.g. Rajesh" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Last Name</label>
-              <input name="LastName" value={formData.LastName} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="LastName" value={formData.LastName} placeholder="e.g. Kumar" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Gender</label>
@@ -394,15 +394,15 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Phone Number *</label>
-              <input name="PhoneNo" value={formData.PhoneNo} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
+              <input name="PhoneNo" value={formData.PhoneNo} placeholder="e.g. 9876543210" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Alternate Phone</label>
-              <input name="AlternatePhoneNo" value={formData.AlternatePhoneNo} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="AlternatePhoneNo" value={formData.AlternatePhoneNo} placeholder="e.g. 9123456789" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="md:col-span-2 space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Email Address</label>
-              <input name="Email" type="email" value={formData.Email} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="Email" type="email" value={formData.Email} placeholder="e.g. rajesh.kumar@email.com" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
           </div>
         </div>
@@ -416,11 +416,11 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Address Line 1</label>
-              <input name="AddressLine1" value={formData.AddressLine1} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="AddressLine1" value={formData.AddressLine1} placeholder="e.g. 101, Sai Residency, MG Road" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Address Line 2</label>
-              <input name="AddressLine2" value={formData.AddressLine2} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="AddressLine2" value={formData.AddressLine2} placeholder="e.g. Near City Mall, Shivaji Nagar" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -444,16 +444,16 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">City</label>
-              <input name="City" value={formData.City} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="City" value={formData.City} placeholder="e.g. Pune" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">State</label>
-              <input name="State" value={formData.State} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="State" value={formData.State} placeholder="e.g. Maharashtra" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
           </div>
           <div className="space-y-1">
             <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Country</label>
-            <input name="Country" value={formData.Country} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+            <input name="Country" value={formData.Country} placeholder="e.g. India" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
           </div>
         </div>
 
@@ -466,7 +466,7 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">License Number *</label>
-              <input name="LicenseNumber" value={formData.LicenseNumber} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
+              <input name="LicenseNumber" value={formData.LicenseNumber} placeholder="e.g. MH12 20230123456" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} required />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">License Type</label>
@@ -482,7 +482,7 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Issued By</label>
-              <input name="LicenseIssuedBy" value={formData.LicenseIssuedBy} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="LicenseIssuedBy" value={formData.LicenseIssuedBy} placeholder="e.g. Pune RTO" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Experience (Years)</label>
@@ -490,7 +490,7 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
             </div>
             <div className="md:col-span-2 space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Vehicle Types Allowed</label>
-              <input name="VehicleTypeAllowed" value={formData.VehicleTypeAllowed} placeholder="e.g. Car, Truck, Bus" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="VehicleTypeAllowed" value={formData.VehicleTypeAllowed} placeholder="e.g. LMV, HGV, MCWG" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
           </div>
         </div>
@@ -523,11 +523,11 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Aadhaar Number</label>
-              <input name="AadhaarNo" value={formData.AadhaarNo} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="AadhaarNo" value={formData.AadhaarNo} placeholder="e.g. 1234 5678 9012" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">PAN Number</label>
-              <input name="PanNo" value={formData.PanNo} readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
+              <input name="PanNo" value={formData.PanNo} placeholder="e.g. ABCDE1234F" readOnly={isViewMode} disabled={isViewMode} onChange={handleChange} className={cn("input-field", isViewMode && "bg-surface-container-low border-transparent cursor-default")} />
             </div>
           </div>
         </div>

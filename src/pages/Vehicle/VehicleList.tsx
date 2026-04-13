@@ -299,7 +299,7 @@ export default function VehicleDirectory() {
                           <Eye size={18} />
                         </button>
                         <button
-                          onClick={() => openModal('edit', v.id)}
+                          onClick={() => navigate(`/vehicles/${v.id}?edit=true`)}
                           className="p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors"
                         >
                           <Edit size={18} />
