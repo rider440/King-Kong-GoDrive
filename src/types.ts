@@ -114,6 +114,7 @@ export interface Vehicle {
   PollutionExpiryDate?: string;
   CurrentLocation?: string;
   TotalDistanceTravelled: number;
+  IsActive: boolean;
   IsAvailable: boolean;
   CreatedAt?: string;
 }

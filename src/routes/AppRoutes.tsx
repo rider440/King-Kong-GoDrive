@@ -9,6 +9,7 @@ import Login from '@/pages/Auth/Login';
 import AddDriver from '@/pages/Driver/AddDriver';
 import VehicleList from '@/pages/Vehicle/VehicleList';
 import AddVehicle from '@/pages/Vehicle/AddVehicle';
+import VehicleProfile from '@/pages/Vehicle/VehicleProfile';
 import TripDispatch from '@/pages/Trip/TripDispatch';
 import LiveTracking from '@/pages/Trip/LiveTracking';
 import AttendanceLog from '@/pages/Attendance/AttendanceLog';
@@ -41,6 +42,7 @@ const AppRoutes = () => (
       {/* <Route path="/drivers/new" element={<Layout title="Add Driver"><AddDriver /></Layout>} /> */}
       
       <Route path="/vehicles" element={<Layout title="Vehicles"><VehicleList /></Layout>} />
+      <Route path="/vehicles/:id" element={<VehicleProfile />} />
       <Route path="/vehicles/new" element={<Layout title="Add Vehicle"><AddVehicle /></Layout>} />
       <Route path="/trips" element={<Layout title="Trips"><TripDispatch /></Layout>} />
       <Route path="/trips/new" element={<Layout title="Dispatch"><TripDispatch /></Layout>} />

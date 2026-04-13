@@ -91,3 +91,53 @@ export const DriverTableSkeleton: React.FC<{ count?: number }> = ({ count = 5 })
     </>
   );
 };
+
+/**
+ * Vehicle table row skeleton
+ */
+export const VehicleTableSkeleton: React.FC<{ count?: number }> = ({ count = 5 }) => {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <tr key={i} className="hover:bg-surface-container-low transition-colors group border-b border-outline/5">
+          {/* Vehicle Column */}
+          <td className="px-6 py-4">
+            <div className="flex items-center gap-4">
+              <Skeleton className="w-10 h-10 rounded-lg" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-32 rounded" />
+                <Skeleton className="h-3 w-20 rounded" />
+              </div>
+            </div>
+          </td>
+          {/* Registration Column */}
+          <td className="px-6 py-4">
+            <Skeleton className="h-6 w-24 rounded" />
+          </td>
+          {/* Type Column */}
+          <td className="px-6 py-4">
+            <Skeleton className="h-4 w-28 rounded" />
+          </td>
+          {/* Location Column */}
+          <td className="px-6 py-4">
+            <div className="flex items-center gap-2">
+              <Skeleton className="w-4 h-4 rounded-full" />
+              <Skeleton className="h-4 w-24 rounded" />
+            </div>
+          </td>
+          {/* Status Column */}
+          <td className="px-6 py-4">
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </td>
+          {/* Actions Column */}
+          <td className="px-6 py-4 text-right">
+            <div className="flex items-center justify-end gap-2">
+              <Skeleton className="w-8 h-8 rounded-lg" />
+              <Skeleton className="w-8 h-8 rounded-lg" />
+            </div>
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+};
