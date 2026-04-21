@@ -81,6 +81,7 @@ export default function DriverProfile() {
     const [attendance, setAttendance] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isImageOpen, setIsImageOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const fetchDriver = async () => {
@@ -269,12 +270,19 @@ export default function DriverProfile() {
                 {/* Profile Header Section */}
                 <section className="bg-surface-container-lowest rounded-2xl shadow-sm p-8 flex flex-col items-center text-center border border-outline/5">
                     <div className="relative mb-6">
-                        <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-surface-container shadow-inner">
+                        <div
+                            className="w-40 h-40 rounded-full overflow-hidden border-4 border-surface-container shadow-inner cursor-pointer group relative"
+                            onClick={() => setIsImageOpen(true)}
+                            title="Click to view full image"
+                        >
                             <img
                                 alt={driver.name}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                 src={driver.image}
                             />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+                                <Eye size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            </div>
                         </div>
                         {driver.isVerified && (
                             <div className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-lg border border-outline/10">
@@ -795,6 +803,32 @@ export default function DriverProfile() {
                         <Loader2 size={40} className="animate-spin text-primary" />
                         <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant">Syncing Live Data...</p>
                         <p className="text-[10px] font-bold uppercase tracking-tighter text-outline-variant">Optimizing profile details</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Full Image Viewer Modal */}
+            {isImageOpen && (
+                <div
+                    className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+                    onClick={() => setIsImageOpen(false)}
+                >
+                    <div className="relative max-w-lg w-full mx-4" onClick={e => e.stopPropagation()}>
+                        <button
+                            onClick={() => setIsImageOpen(false)}
+                            className="absolute -top-12 right-0 p-2 text-white/70 hover:text-white transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
+                        >
+                            <X size={20} />
+                            Close
+                        </button>
+                        <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10">
+                            <img
+                                src={driver.image}
+                                alt={driver.name}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                        <p className="text-center text-white/60 text-xs font-semibold mt-4 uppercase tracking-widest">{driver.name}</p>
                     </div>
                 </div>
             )}

@@ -11,6 +11,7 @@ import VehicleList from '@/pages/Vehicle/VehicleList';
 import AddVehicle from '@/pages/Vehicle/AddVehicle';
 import VehicleProfile from '@/pages/Vehicle/VehicleProfile';
 import TripDispatch from '@/pages/Trip/TripDispatch';
+import TripList from '@/pages/Trip/TripList';
 import LiveTracking from '@/pages/Trip/LiveTracking';
 import AttendanceLog from '@/pages/Attendance/AttendanceLog';
 import BulkAttendanceUpdate from '@/pages/Attendance/BulkAttendanceUpdate';
@@ -44,7 +45,7 @@ const AppRoutes = () => (
       <Route path="/vehicles" element={<Layout title="Vehicles"><VehicleList /></Layout>} />
       <Route path="/vehicles/:id" element={<VehicleProfile />} />
       <Route path="/vehicles/new" element={<Layout title="Add Vehicle"><AddVehicle /></Layout>} />
-      <Route path="/trips" element={<Layout title="Trips"><TripDispatch /></Layout>} />
+      <Route path="/trips" element={<Layout title="Trips"><TripList /></Layout>} />
       <Route path="/trips/new" element={<Layout title="Dispatch"><TripDispatch /></Layout>} />
       <Route path="/live" element={<Layout title="Live Map"><LiveTracking /></Layout>} />
       <Route path="/attendance" element={<Layout title="Attendance"><AttendanceLog /></Layout>} />

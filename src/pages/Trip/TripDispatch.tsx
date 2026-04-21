@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Send,
   Truck,
@@ -8,53 +8,115 @@ import {
   Clock,
   AlertCircle,
   ChevronRight,
-  Route,
   Navigation,
   FileText,
   CheckCircle2,
-  Info
+  Info,
+  Loader2,
+  Route as RouteIcon
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { TripDispatch as TripDispatchType, TripStatus } from '@/types';
+import { TripStatus } from '@/types';
+import { getVehicles } from '@/services/vehicleService';
+import { getDrivers } from '@/services/driverService';
+import { createTrip } from '@/services/tripService';
+import { useToast } from '@/context/ToastContext';
 
 export default function TripDispatch() {
-  const [formData, setFormData] = useState<Partial<TripDispatchType>>({
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [drivers, setDrivers] = useState<any[]>([]);
+  const [isLoadingAssets, setIsLoadingAssets] = useState(true);
+
+  const [formData, setFormData] = useState<any>({
     TripStatus: TripStatus.Scheduled,
     Vehicle_Id: 0,
     Driver_Id: 0,
     Origin: '',
     Destination: '',
-    DepartureDate: '',
-    DepartureTime: '',
-    Remarks: '',
-    DistanceKM: 0
+    DepartureDate: new Date().toISOString().split('T')[0],
+    DepartureTime: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+    ExpectedArrivalDate: '',
+    ExpectedArrivalTime: '',
+    DistanceKM: 0,
+    Remarks: ''
   });
+
+  // Fetch Available Assets
+  useEffect(() => {
+    const fetchAssets = async () => {
+      setIsLoadingAssets(true);
+      try {
+        const [vehRes, driRes] = await Promise.all([
+          getVehicles({ isAvailable: true, isActive: true, pageSize: 100 }),
+          getDrivers({ isAvailable: true, isActive: true, pageSize: 100 })
+        ]);
+        
+        setVehicles(vehRes?.data?.data || vehRes?.data || []);
+        setDrivers(driRes?.data?.data || driRes?.data || []);
+      } catch (error) {
+        console.error("❌ ERROR FETCHING ASSETS:", error);
+        showToast("Failed to load available vehicles and drivers", "error");
+      } finally {
+        setIsLoadingAssets(false);
+      }
+    };
+    fetchAssets();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name.includes('_Id') || name === 'DistanceKM' ? Number(value) : value
+      [name]: (name.includes('_Id') || name === 'DistanceKM') ? Number(value) : value
     }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (progress < 100) return;
+
+    setIsSubmitting(true);
+    try {
+      await createTrip(formData);
+      showToast("Trip dispatched successfully!", "success");
+      navigate('/trips');
+    } catch (error: any) {
+      console.error("❌ DISPATCH ERROR:", error);
+      showToast(error.response?.data?.message || "Failed to dispatch trip", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const requiredFields = ['Vehicle_Id', 'Driver_Id', 'Origin', 'Destination', 'DepartureDate', 'DepartureTime'];
   const completedRequiredFields = requiredFields.filter(field => {
-    const val = formData[field as keyof TripDispatchType];
+    const val = formData[field];
     return val !== undefined && val !== '' && val !== 0;
   });
   const progress = Math.round((completedRequiredFields.length / requiredFields.length) * 100);
 
   return (
     <div className="space-y-8">
-      <section>
-        <h1 className="text-3xl font-black tracking-tight text-on-surface uppercase italic">Trip Dispatch</h1>
-        <p className="text-on-surface-variant mt-1 font-medium">Coordinate precision logistics and vehicle deployment.</p>
+      <section className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight text-on-surface">Trip Dispatch</h1>
+          <p className="text-on-surface-variant mt-1 font-medium">Coordinate precision logistics and vehicle deployment.</p>
+        </div>
+        <button 
+          onClick={() => navigate('/trips')}
+          className="text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2"
+        >
+          <ChevronRight size={14} className="rotate-180" />
+          Back to list
+        </button>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-20">
         <div className="lg:col-span-8 space-y-8">
-          {/* Dispatch Form */}
           <div className="bg-surface-container-lowest rounded-2xl shadow-ambient border border-outline/5 overflow-hidden">
             <div className="p-8 space-y-10">
 
@@ -75,12 +137,15 @@ export default function TripDispatch() {
                         name="Vehicle_Id"
                         value={formData.Vehicle_Id}
                         onChange={handleChange}
-                        className="input-field pl-12 appearance-none"
+                        disabled={isLoadingAssets}
+                        className="input-field pl-12 appearance-none disabled:opacity-50"
                       >
-                        <option value={0}>Choose Vehicle...</option>
-                        <option value={1}>MH31AB1234 | Mercedes Actros</option>
-                        <option value={2}>MH31CD5678 | Volvo FH16</option>
-                        <option value={3}>MH31EF9012 | Scania R-Series</option>
+                        <option value={0}>{isLoadingAssets ? 'Loading fleet...' : 'Choose Available Vehicle...'}</option>
+                        {vehicles.map(v => (
+                          <option key={v.vehicle_Id || v.Vehicle_Id} value={v.vehicle_Id || v.Vehicle_Id}>
+                            {v.vehicleNumber || v.VehicleNumber} | {v.brand || v.Brand} {v.model || v.Model}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -92,12 +157,15 @@ export default function TripDispatch() {
                         name="Driver_Id"
                         value={formData.Driver_Id}
                         onChange={handleChange}
-                        className="input-field pl-12 appearance-none"
+                        disabled={isLoadingAssets}
+                        className="input-field pl-12 appearance-none disabled:opacity-50"
                       >
-                        <option value={0}>Choose Driver...</option>
-                        <option value={1}>Julian Rossi</option>
-                        <option value={2}>Sarah Mitchell</option>
-                        <option value={3}>Marcus Chen</option>
+                        <option value={0}>{isLoadingAssets ? 'Syncing crew...' : 'Choose Available Driver...'}</option>
+                        {drivers.map(d => (
+                          <option key={d.driver_Id || d.Driver_Id} value={d.driver_Id || d.Driver_Id}>
+                            {d.firstName || d.FirstName} {d.lastName || d.LastName}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -124,6 +192,7 @@ export default function TripDispatch() {
                         className="input-field pl-12"
                         placeholder="Start location..."
                         type="text"
+                        required
                       />
                     </div>
                   </div>
@@ -138,6 +207,7 @@ export default function TripDispatch() {
                         className="input-field pl-12"
                         placeholder="End location..."
                         type="text"
+                        required
                       />
                     </div>
                   </div>
@@ -162,8 +232,8 @@ export default function TripDispatch() {
                         value={formData.DepartureDate}
                         onChange={handleChange}
                         className="input-field pl-12"
-                        placeholder="YYYY-MM-DD"
                         type="date"
+                        required
                       />
                     </div>
                   </div>
@@ -176,49 +246,21 @@ export default function TripDispatch() {
                         value={formData.DepartureTime}
                         onChange={handleChange}
                         className="input-field pl-12"
-                        placeholder="HH:MM"
                         type="time"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant block">Expected Arrival Date</label>
-                    <div className="relative group">
-                      <Calendar size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
-                      <input
-                        name="ExpectedArrivalDate"
-                        value={formData.ExpectedArrivalDate}
-                        onChange={handleChange}
-                        className="input-field pl-12"
-                        placeholder="YYYY-MM-DD"
-                        type="date"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant block">Expected Arrival Time</label>
-                    <div className="relative group">
-                      <Clock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
-                      <input
-                        name="ExpectedArrivalTime"
-                        value={formData.ExpectedArrivalTime}
-                        onChange={handleChange}
-                        className="input-field pl-12"
-                        placeholder="HH:MM"
-                        type="time"
+                        required
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Advanced Metrics */}
+              {/* Logistics Details */}
               <div className="space-y-6">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
-                    <Route size={18} />
+                    <RouteIcon size={18} />
                   </div>
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-on-surface">Advanced Metrics</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-on-surface">Logistical Details</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
@@ -236,7 +278,7 @@ export default function TripDispatch() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant block">Trip Status</label>
+                    <label className="text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant block">Initial Trip Status</label>
                     <div className="relative group">
                       <Info size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
                       <select
@@ -276,26 +318,26 @@ export default function TripDispatch() {
                 </span>
               </div>
               <button
-                disabled={progress < 100}
+                type="submit"
+                disabled={progress < 100 || isSubmitting}
                 className={cn(
-                  "btn-primary px-10 py-3 transition-all duration-300",
-                  progress < 100 && "opacity-50 cursor-not-allowed grayscale"
+                  "btn-primary px-10 py-3 transition-all duration-300 relative overflow-hidden",
+                  (progress < 100 || isSubmitting) && "opacity-50 cursor-not-allowed grayscale"
                 )}
               >
-                <Send size={18} />
-                Confirm Dispatch
+                {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                <span>{isSubmitting ? 'Confirming...' : 'Confirm Dispatch'}</span>
               </button>
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-4 space-y-8">
-          {/* Progress Tracker */}
           <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-ambient border border-outline/5 sticky top-8">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black text-on-surface uppercase tracking-widest italic">Dispatch Readiness</h3>
-                <span className="text-2xl font-black text-primary italic">{progress}%</span>
+                <h3 className="text-sm font-black text-on-surface uppercase tracking-widest">Dispatch Readiness</h3>
+                <span className="text-2xl font-black text-primary">{progress}%</span>
               </div>
 
               <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden border border-outline/5">
@@ -316,7 +358,7 @@ export default function TripDispatch() {
                     ? (formData.Origin && formData.Destination)
                     : step.key === 'DepartureDate'
                       ? (formData.DepartureDate && formData.DepartureTime)
-                      : (formData[step.key as keyof TripDispatchType] && formData[step.key as keyof TripDispatchType] !== 0);
+                      : (formData[step.key] && formData[step.key] !== 0);
 
                   return (
                     <div key={step.label} className="flex items-center gap-3">
@@ -342,45 +384,14 @@ export default function TripDispatch() {
                     <span className="text-[10px] font-bold uppercase tracking-widest">Dispatch Tip</span>
                   </div>
                   <p className="text-[11px] leading-relaxed text-on-surface-variant font-medium">
-                    Ensure the driver has completed the pre-trip vehicle inspection before confirming dispatch.
+                    Assets listed are automatically filtered for current availability and active status.
                   </p>
                 </div>
               </div>
             </div>
           </div>
-
-          <h2 className="text-sm font-bold text-on-surface uppercase tracking-wider px-1">Active Dispatches</h2>
-          <div className="space-y-4">
-            {[
-              { id: 'TRP-990', route: 'NY → CHI', status: 'In Transit', progress: 65 },
-              { id: 'TRP-991', route: 'LA → SF', status: 'Loading', progress: 10 },
-              { id: 'TRP-992', route: 'MIA → ATL', status: 'In Transit', progress: 88 }
-            ].map((trip) => (
-              <div key={trip.id} className="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-outline/5 space-y-4 hover:shadow-md transition-shadow cursor-pointer">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-[0.65rem] font-bold text-primary uppercase tracking-widest">{trip.id}</p>
-                    <p className="text-lg font-black text-on-surface mt-1">{trip.route}</p>
-                  </div>
-                  <span className="text-[0.65rem] font-bold uppercase px-2 py-1 bg-primary/5 text-primary rounded-lg">{trip.status}</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-bold text-on-surface-variant uppercase">
-                    <span>Progress</span>
-                    <span>{trip.progress}%</span>
-                  </div>
-                  <div className="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-primary h-full rounded-full transition-all duration-1000" style={{ width: `${trip.progress}%` }}></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <button className="w-full py-4 text-[0.7rem] font-bold text-primary uppercase tracking-widest bg-surface-container-lowest border border-outline/10 rounded-xl hover:bg-surface-container transition-colors">
-            View Dispatch History
-          </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

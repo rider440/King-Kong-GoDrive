@@ -4,11 +4,7 @@ import {
   Plus,
   Search,
   Filter,
-  MoreVertical,
   MapPin,
-  Calendar,
-  Fuel,
-  Settings,
   Eye,
   Edit,
   X,
@@ -50,7 +46,7 @@ export default function VehicleDirectory() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Status filter state: 'all' | 'available' | 'notAvailable'
+  // Status filter state
   const [statusFilter, setStatusFilter] = useState<'all' | 'available' | 'notAvailable'>('all');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
@@ -71,7 +67,7 @@ export default function VehicleDirectory() {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       setDebouncedSearch(searchTerm);
-      setCurrentPage(1); // reset to page 1 on new search
+      setCurrentPage(1);
     }, 400);
     return () => {
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
@@ -85,6 +81,7 @@ export default function VehicleDirectory() {
         pageNumber: currentPage,
         pageSize: PAGE_SIZE,
         search: debouncedSearch || undefined,
+        isActive: true,
         isAvailable:
           statusFilter === 'available'
             ? true
@@ -95,11 +92,9 @@ export default function VehicleDirectory() {
 
       const res = await getVehicles(params);
       
-      // ✅ Extract from API structure (assuming same as driver for consistency)
-      const rawList = res?.data?.data || res?.data || [];
-      const total = res?.data?.totalRecords || res?.totalRecords || rawList.length;
+      const rawList = res?.data?.data || res?.data || res || [];
+      const total = res?.data?.totalRecords ?? res?.totalRecords ?? rawList.length;
 
-      // ✅ MAP DATA
       const mappedVehicles = rawList.map((v: any) => ({
         id: v.vehicle_Id ?? v.Vehicle_Id,
         VehicleNumber: v.vehicleNumber || v.VehicleNumber,
@@ -115,7 +110,7 @@ export default function VehicleDirectory() {
       setVehicles(mappedVehicles);
       setTotalCount(total);
     } catch (error) {
-      console.error("❌ ERROR FETCHING VEHICLES:", error);
+      console.error('❌ ERROR FETCHING VEHICLES:', error);
     } finally {
       setIsLoading(false);
     }
@@ -125,7 +120,6 @@ export default function VehicleDirectory() {
     fetchVehicles();
   }, [fetchVehicles]);
 
-  // Modal handlers
   const openModal = (mode: 'add' | 'edit' | 'view', id?: string | number) => {
     setModalState({ isOpen: true, mode, id });
   };
@@ -137,7 +131,6 @@ export default function VehicleDirectory() {
 
   const statusLabel = statusFilter === 'all' ? 'All Status' : statusFilter === 'available' ? 'Available' : 'Not Available';
 
-  // Pagination helpers
   const getPageNumbers = () => {
     const pages: (number | '...')[] = [];
     if (totalPages <= 7) {
@@ -159,7 +152,7 @@ export default function VehicleDirectory() {
       <section className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black tracking-tight text-on-surface">Vehicle Assets</h1>
-          <p className="text-on-surface-variant mt-1 font-medium">Manage and monitor your fleet inventory.</p>
+          <p className="text-on-surface-variant mt-1 font-medium">Manage and monitor your fleet inventory in real-time.</p>
         </div>
         <button
           onClick={() => openModal('add')}
@@ -170,14 +163,14 @@ export default function VehicleDirectory() {
         </button>
       </section>
 
-      <div className="bg-surface-container-lowest rounded-xl shadow-ambient overflow-hidden">
+      <div className="bg-surface-container-lowest rounded-xl shadow-ambient overflow-hidden border border-outline/5">
         <div className="p-6 bg-surface-container-lowest flex flex-col md:flex-row items-center justify-between gap-4 border-b border-outline/5">
           {/* Search Box */}
           <div className="relative w-full md:w-96 group">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" />
             <input
-              placeholder="Search vehicles..."
-              className="w-full pl-12 pr-10 py-3 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg transition-all text-sm"
+              placeholder="Search by Plate, Brand or Model..."
+              className="w-full pl-12 pr-10 py-3 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg transition-all text-sm font-medium"
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -212,9 +205,9 @@ export default function VehicleDirectory() {
                 <div className="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-lg ring-1 ring-outline/10 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="py-1">
                     {[
-                      { value: 'all' as const, label: 'All Status' },
-                      { value: 'available' as const, label: 'Available' },
-                      { value: 'notAvailable' as const, label: 'Not Available' },
+                      { value: 'all' as const, label: 'All Status', desc: 'Full fleet visibility' },
+                      { value: 'available' as const, label: 'Available', desc: 'Ready for mission' },
+                      { value: 'notAvailable' as const, label: 'Not Available', desc: 'Currently deployed' },
                     ].map((option) => (
                       <button
                         key={option.value}
@@ -228,10 +221,18 @@ export default function VehicleDirectory() {
                           statusFilter === option.value && "bg-primary/5"
                         )}
                       >
-                        <p className={cn(
-                          "text-sm font-semibold",
-                          statusFilter === option.value ? "text-primary" : "text-on-surface"
-                        )}>{option.label}</p>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className={cn(
+                              "text-sm font-bold uppercase tracking-wider",
+                              statusFilter === option.value ? "text-primary" : "text-on-surface"
+                            )}>{option.label}</p>
+                            <p className="text-[10px] text-on-surface-variant font-medium">{option.desc}</p>
+                          </div>
+                          {statusFilter === option.value && (
+                            <div className="w-2 h-2 rounded-full bg-primary" />
+                          )}
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -249,7 +250,7 @@ export default function VehicleDirectory() {
                 <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Registration</th>
                 <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Type</th>
                 <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Location</th>
-                <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Status</th>
+                <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant">Availability</th>
                 <th className="px-6 py-4 text-[0.75rem] font-bold uppercase tracking-widest text-on-surface-variant text-right">Actions</th>
               </tr>
             </thead>
@@ -261,8 +262,14 @@ export default function VehicleDirectory() {
                   <tr key={v.id} className="hover:bg-surface-container-low transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-                          <Truck size={20} />
+                        <div className="relative">
+                          <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <Truck size={20} />
+                          </div>
+                          <div className={cn(
+                            "absolute -top-1 -right-1 w-3 h-3 border-2 border-white rounded-full",
+                            v.IsAvailable ? "bg-green-500 shadow-sm" : "bg-amber-500"
+                          )} />
                         </div>
                         <div>
                           <p className="font-semibold text-on-surface">{v.Brand} {v.Model}</p>
@@ -271,36 +278,36 @@ export default function VehicleDirectory() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm font-bold text-primary bg-primary/5 px-2 py-1 rounded">{v.VehicleNumber}</span>
+                      <span className="text-sm font-medium text-primary bg-primary/5 px-2.5 py-1 rounded border border-primary/10">{v.VehicleNumber}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-sm font-medium text-on-surface">{v.VehicleType}</p>
+                      <p className="text-xs font-bold text-on-surface uppercase tracking-wider">{v.VehicleType}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5">
-                        <MapPin size={14} className="text-on-surface-variant" />
-                        <p className="text-sm text-on-surface">{v.CurrentLocation}</p>
+                      <div className="flex items-center gap-1.5 grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+                        <MapPin size={14} className="text-primary" />
+                        <p className="text-xs font-bold text-on-surface uppercase tracking-tighter">{v.CurrentLocation}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className={cn(
-                        "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset",
-                        v.IsAvailable ? "bg-green-50 text-green-700 ring-green-600/20" : "bg-amber-50 text-amber-700 ring-amber-600/20"
-                      )}>
-                        {v.IsAvailable ? 'Available' : 'On Trip'}
-                      </span>
+                         "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ring-inset",
+                         v.IsAvailable ? "bg-green-50 text-green-700 ring-green-600/20" : "bg-amber-50 text-amber-700 ring-amber-600/20"
+                       )}>
+                         {v.IsAvailable ? 'Available' : 'On Trip'}
+                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => navigate(`/vehicles/${v.id}`)}
-                          className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                          className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors shadow-sm border border-outline/10"
                         >
                           <Eye size={18} />
                         </button>
                         <button
-                          onClick={() => navigate(`/vehicles/${v.id}?edit=true`)}
-                          className="p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors"
+                          onClick={() => openModal('edit', v.id)}
+                          className="p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors border border-outline/10"
                         >
                           <Edit size={18} />
                         </button>
@@ -311,9 +318,14 @@ export default function VehicleDirectory() {
               ) : (
                 <tr>
                   <td colSpan={6} className="px-6 py-20 text-center">
-                    <div className="flex flex-col items-center gap-2 opacity-30">
-                      <Truck size={48} />
-                      <p className="text-sm font-black uppercase tracking-widest text-on-surface">No vehicles found</p>
+                    <div className="flex flex-col items-center gap-4 opacity-30">
+                      <Truck size={48} className="animate-pulse" />
+                      <div className="space-y-1">
+                         <p className="text-sm font-black uppercase tracking-widest text-on-surface">No vehicles found</p>
+                        <p className="text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant">
+                          Your search parameters returned zero assets.
+                        </p>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -336,8 +348,8 @@ export default function VehicleDirectory() {
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
                 className={cn(
-                  "p-2 rounded-lg transition-all",
-                  currentPage === 1 ? "text-on-surface-variant/30 cursor-not-allowed" : "text-on-surface-variant hover:bg-surface-container-highest hover:text-primary"
+                  "p-2 rounded-lg transition-all border border-outline/10",
+                  currentPage === 1 ? "text-on-surface-variant/30 cursor-not-allowed" : "text-on-surface-variant hover:bg-surface-container-highest hover:text-primary active:scale-95"
                 )}
               >
                 <ChevronLeft size={18} />
@@ -352,8 +364,8 @@ export default function VehicleDirectory() {
                       key={page}
                       onClick={() => setCurrentPage(page as number)}
                       className={cn(
-                        "min-w-[32px] h-8 px-2 rounded-lg text-xs font-bold transition-all",
-                        currentPage === page ? "bg-primary text-white shadow-md" : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                        "min-w-[36px] h-9 px-2 rounded-lg text-xs font-black transition-all uppercase",
+                        currentPage === page ? "bg-primary text-white shadow-primary-glow scale-105" : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface border border-transparent hover:border-outline/20"
                       )}
                     >
                       {page}
@@ -366,8 +378,8 @@ export default function VehicleDirectory() {
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage >= totalPages}
                 className={cn(
-                  "p-2 rounded-lg transition-all",
-                  currentPage >= totalPages ? "text-on-surface-variant/30 cursor-not-allowed" : "text-on-surface-variant hover:bg-surface-container-highest hover:text-primary"
+                  "p-2 rounded-lg transition-all border border-outline/10",
+                  currentPage >= totalPages ? "text-on-surface-variant/30 cursor-not-allowed" : "text-on-surface-variant hover:bg-surface-container-highest hover:text-primary active:scale-95"
                 )}
               >
                 <ChevronRight size={18} />
@@ -378,10 +390,10 @@ export default function VehicleDirectory() {
       </div>
 
       {isLoading && !vehicles.length && (
-        <div className="fixed inset-0 bg-surface/50 backdrop-blur-sm flex items-center justify-center z-[60]">
-          <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4">
-            <Loader2 size={40} className="animate-spin text-primary" />
-            <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant">Syncing Live Data...</p>
+        <div className="fixed inset-0 bg-surface/40 backdrop-blur-md flex items-center justify-center z-[70]">
+          <div className="bg-surface-container-lowest p-10 rounded-3xl shadow-2xl flex flex-col items-center gap-6 border border-outline/10">
+            <Loader2 size={48} className="animate-spin text-primary" />
+             <p className="text-xs font-black uppercase tracking-widest text-on-surface-variant">Syncing Fleet Data...</p>
           </div>
         </div>
       )}

@@ -141,3 +141,44 @@ export const VehicleTableSkeleton: React.FC<{ count?: number }> = ({ count = 5 }
     </>
   );
 };
+
+/**
+ * Trip table row skeleton
+ */
+export const TripTableSkeleton: React.FC<{ count?: number }> = ({ count = 5 }) => {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <tr key={i} className="hover:bg-surface-container-low transition-colors group border-b border-outline/5">
+          <td className="px-6 py-4">
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-20 rounded" />
+              <Skeleton className="h-5 w-40 rounded" />
+            </div>
+          </td>
+          <td className="px-6 py-4">
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-32 rounded" />
+              <Skeleton className="h-3 w-28 rounded" />
+            </div>
+          </td>
+          <td className="px-6 py-4">
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-24 rounded" />
+              <Skeleton className="h-3 w-16 rounded" />
+            </div>
+          </td>
+          <td className="px-6 py-4">
+            <Skeleton className="h-6 w-24 rounded-full" />
+          </td>
+          <td className="px-6 py-4 text-right">
+            <div className="flex items-center justify-end gap-2">
+              <Skeleton className="w-8 h-8 rounded-lg" />
+              <Skeleton className="w-8 h-8 rounded-lg" />
+            </div>
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+};
