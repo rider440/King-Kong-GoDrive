@@ -165,9 +165,9 @@ const TripModal: React.FC<TripModalProps> = ({ tripId, mode: initialMode, onClos
               {mode === 'view' ? <Eye size={24} /> : <Edit2 size={24} />}
             </div>
             <div>
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Mission Control</p>
-              <h2 className="text-xl font-black text-on-surface uppercase italic tracking-tight">
-                {mode === 'view' ? `Intelligence Report #TRP-${tripId}` : `Recalibrate Mission #TRP-${tripId}`}
+              <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Trip Details</p>
+              <h2 className="text-xl font-black text-on-surface tracking-tight">
+                {mode === 'view' ? `Trip #TRP-${tripId}` : `Edit Trip #TRP-${tripId}`}
               </h2>
             </div>
           </div>

@@ -296,7 +296,7 @@ export default function AddDriver({ mode: propMode, id: propId, onClose }: AddDr
             <UserPlus size={24} />
           </div>
           <div>
-            <h2 className="text-xl font-black text-on-surface uppercase italic">
+            <h2 className="text-xl font-black text-on-surface">
               {isViewMode ? 'Driver Details' : isEditMode ? 'Edit Driver Profile' : 'Add New Driver'}
             </h2>
             <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">

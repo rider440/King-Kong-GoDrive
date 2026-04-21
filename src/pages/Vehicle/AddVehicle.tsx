@@ -283,7 +283,7 @@ export default function AddVehicle({ mode: propMode, id: propId, onClose }: AddV
             <Truck size={24} />
           </div>
           <div>
-            <h2 className="text-xl font-black text-on-surface uppercase italic">
+            <h2 className="text-xl font-black text-on-surface">
               {isViewMode ? 'Asset Details' : isEditMode ? 'Edit Vehicle Asset' : 'Register New Asset'}
             </h2>
             <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">

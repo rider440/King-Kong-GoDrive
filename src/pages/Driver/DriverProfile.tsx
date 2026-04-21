@@ -26,7 +26,8 @@ import {
     Filter,
     Plus,
     Eye,
-    Edit
+    Edit,
+    X
 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { cn } from '@/lib/utils';
